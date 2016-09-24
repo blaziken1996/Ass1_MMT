@@ -1,8 +1,8 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
 
@@ -11,14 +11,14 @@ import java.util.List;
  */
 public class ClientSocket {
     private Socket socket;
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
+    private InputStream inputStream;
+    private OutputStream outputStream;
     private String name;
 
     public ClientSocket(Socket socket) throws IOException {
         this.socket = socket;
-        inputStream = new DataInputStream(socket.getInputStream());
-        outputStream = new DataOutputStream(socket.getOutputStream());
+        inputStream = socket.getInputStream();
+        outputStream = socket.getOutputStream();
     }
 
     public String getName() {
@@ -33,7 +33,7 @@ public class ClientSocket {
         return socket;
     }
 
-    public DataInputStream getInputStream() {
+    public InputStream getInputStream() {
         return inputStream;
     }
 
@@ -42,7 +42,11 @@ public class ClientSocket {
         socket.close();
     }
 
-    public synchronized void write(List<String> messages, int code) {
+    public synchronized void write(List<byte[]> packet) throws IOException {
+
+        for (byte[] b : packet) outputStream.write(b);
+    }
+    /*public synchronized void write(List<String> messages, int code) {
         try {
             outputStream.writeInt(code);
             if (messages == null) return;
@@ -50,5 +54,5 @@ public class ClientSocket {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

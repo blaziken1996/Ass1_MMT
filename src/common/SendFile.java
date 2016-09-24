@@ -16,11 +16,12 @@ public class SendFile {
             fileInputStream = new FileInputStream(file);
             bufferedInputStream = new BufferedInputStream(fileInputStream);
             int count;
-            byte[] buffer = new byte[8192];
+            byte[] buffer = new byte[Protocol.BUFFER_SIZE];
             while ((count = bufferedInputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, count);
             }
             outputStream.flush();
+            bufferedInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

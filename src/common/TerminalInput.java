@@ -16,7 +16,7 @@ public class TerminalInput implements ReadInput {
     }
 
     @Override
-    public String read() {
+    synchronized public String read() {
         try {
             return br.readLine();
         } catch (IOException e) {

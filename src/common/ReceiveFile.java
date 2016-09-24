@@ -14,12 +14,13 @@ public class ReceiveFile {
             InputStream inputStream = socket.getInputStream();
             fileOutputStream = new FileOutputStream(file);
             bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            byte[] buffer = new byte[8192];
+            byte[] buffer = new byte[Protocol.BUFFER_SIZE];
             int count;
             while ((count = inputStream.read(buffer)) > 0) {
                 bufferedOutputStream.write(buffer, 0, count);
             }
             bufferedOutputStream.flush();
+            bufferedOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

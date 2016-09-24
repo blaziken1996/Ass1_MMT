@@ -1,11 +1,10 @@
 package client;
 
 import common.DisplayOutput;
+import common.SendFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
 
 /**
@@ -29,13 +28,7 @@ public class ClientSendFile extends Thread {
     @Override
     public void run() {
         try {
-            OutputStream out = client.getOutputStream();
-            FileInputStream in = new FileInputStream(file);
-            int count;
-            byte[] buffer = new byte[8192];
-            while ((count = in.read(buffer)) > 0) out.write(buffer, 0, count);
-            out.flush();
-            in.close();
+            SendFile.send(file, client);
             client.close();
             displayOutput.show("Successfully sent file.");
         } catch (IOException e) {
