@@ -18,7 +18,7 @@ public class ClientReadSocketInput extends Thread {
     private DisplayOutput displayOutput;
     private ReadInput readInput;
 
-    ClientReadSocketInput(Client client, DisplayOutput displayOutput, ReadInput readInput) {
+    public ClientReadSocketInput(Client client, DisplayOutput displayOutput, ReadInput readInput) {
         this.in = client.getInputStream();
         this.displayOutput = displayOutput;
         this.readInput = readInput;
