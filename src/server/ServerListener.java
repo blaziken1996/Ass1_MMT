@@ -80,9 +80,7 @@ public class ServerListener extends Thread {
             packet.add(Protocol.intToBytes(Protocol.ONLINE_LIST_CODE));
             packet.add(Protocol.intToBytes(clientAddressMap.size()));
             for (Map.Entry<String, ClientSocket> e : clientAddressMap.entrySet()) {
-                byte[] bytes = (e.getKey() + " " + e.getValue().getName()).getBytes(Protocol.ENCODE);
-                packet.add(Protocol.intToBytes(bytes.length));
-                packet.add(bytes);
+                packet.add(Protocol.stringToBytes(e.getKey() + " " + e.getValue().getName()));
             }
             client.write(packet);
         } catch (IOException e) {
@@ -95,10 +93,12 @@ public class ServerListener extends Thread {
         /*clientAddressMap.get(fromAddress).write(asList(client.getName(),
                 client.getSocket().getRemoteSocketAddress().toString()), Protocol.DENY_FILE);*/
         try {
-            byte[] name = client.getName().getBytes(Protocol.ENCODE);
-            byte[] address = clientAddress.getBytes(Protocol.ENCODE);
+            //byte[] name = client.getName().getBytes(Protocol.ENCODE);
+            //byte[] address = clientAddress.getBytes(Protocol.ENCODE);
+            //clientAddressMap.get(fromAddress).write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
+            //      Protocol.intToBytes(name.length), name, Protocol.intToBytes(address.length), address));
             clientAddressMap.get(fromAddress).write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
-                    Protocol.intToBytes(name.length), name, Protocol.intToBytes(address.length), address));
+                    Protocol.stringToBytes(client.getName()), Protocol.stringToBytes(clientAddress)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,12 +108,12 @@ public class ServerListener extends Thread {
         ClientSocket recei = clientAddressMap.get(receiver);
         if (recei == null) return false;
         try {
-            byte[] name = client.getName().getBytes(Protocol.ENCODE);
+            /*byte[] name = client.getName().getBytes(Protocol.ENCODE);
             byte[] address = clientAddress.getBytes(Protocol.ENCODE);
-            byte[] file = filename.getBytes(Protocol.ENCODE);
+            byte[] file = filename.getBytes(Protocol.ENCODE);*/
             recei.write(asList(Protocol.intToBytes(Protocol.FILE_REQ_CODE)
-                    , Protocol.intToBytes(name.length), name, Protocol.intToBytes(address.length), address,
-                    Protocol.intToBytes(file.length), file));
+                    , Protocol.stringToBytes(client.getName()), Protocol.stringToBytes(clientAddress),
+                    Protocol.stringToBytes(filename)));
             return true;
 
         } catch (IOException e) {
@@ -127,13 +127,13 @@ public class ServerListener extends Thread {
     private void fileReqAccept(String receiver, String name, String address, String server, int port) {
         /*clientAddressMap.get(receiver).write(asList(name, address, server, port), Protocol.ACCEPT_FILE);*/
         try {
-            byte[] nam = name.getBytes(Protocol.ENCODE);
+            /*byte[] nam = name.getBytes(Protocol.ENCODE);
             byte[] add = address.getBytes(Protocol.ENCODE);
-            byte[] ser = server.getBytes(Protocol.ENCODE);
+            byte[] ser = server.getBytes(Protocol.ENCODE);*/
 
             clientAddressMap.get(receiver).write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
-                    Protocol.intToBytes(nam.length), nam, Protocol.intToBytes(add.length), add,
-                    Protocol.intToBytes(ser.length), ser, Protocol.intToBytes(port)));
+                    Protocol.stringToBytes(name), Protocol.stringToBytes(address),
+                    Protocol.stringToBytes(server), Protocol.intToBytes(port)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -145,12 +145,12 @@ public class ServerListener extends Thread {
 
         ClientSocket receiver = clientAddressMap.get(toAddress);
         if (receiver != null) {
-            byte[] name = client.getName().getBytes(Protocol.ENCODE);
-            byte[] address = clientAddress.getBytes(Protocol.ENCODE);
-            byte[] mess = message.getBytes(Protocol.ENCODE);
+            //byte[] name = client.getName().getBytes(Protocol.ENCODE);
+            //byte[] address = clientAddress.getBytes(Protocol.ENCODE);
+            //byte[] mess = message.getBytes(Protocol.ENCODE);
             receiver.write(asList(Protocol.intToBytes(Protocol.SEND_MSG_CODE),
-                    Protocol.intToBytes(name.length), name, Protocol.intToBytes(address.length), address,
-                    Protocol.intToBytes(mess.length), mess));
+                    Protocol.stringToBytes(client.getName()), Protocol.stringToBytes(clientAddress),
+                    Protocol.stringToBytes(message)));
             /*receiver.write(asList(client.getName(),
                     client.getSocket().getRemoteSocketAddress().toString(), message), Protocol.SEND_MSG_CODE);*/
             return true;

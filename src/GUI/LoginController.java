@@ -64,6 +64,7 @@ public class LoginController {
         stage.setTitle("Client");
         stage.setScene(Client);
         clientGUIController.setClient(client);
+
         //ClientReadSocketInput clientReadSocketInput = new ClientReadSocketInput(client, clientGUIController, null);
         //new Thread(clientReadSocketInput,"ReadSocket").start();
         stage.show();

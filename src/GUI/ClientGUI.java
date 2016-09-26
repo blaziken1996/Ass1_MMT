@@ -4,8 +4,8 @@ package GUI;/**
 
 import client.Client;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
-import common.DisplayOutput;
 import common.Protocol;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +13,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -21,11 +22,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
 
-public class ClientGUI implements DisplayOutput {
+public class ClientGUI implements Initializable {
     @FXML
     private JFXListView<String> onlineList;
 
@@ -42,6 +45,10 @@ public class ClientGUI implements DisplayOutput {
     private Client client;
     private ConcurrentHashMap<String, ChatWindowController> chatWindows;
 
+    public JFXListView<String> getOnlineList() {
+        return onlineList;
+    }
+
     public void setClient(Client client) {
         this.client = client;
     }
@@ -50,9 +57,6 @@ public class ClientGUI implements DisplayOutput {
         return chatWindows;
     }
 
-    public void setChatWindows(ConcurrentHashMap<String, ChatWindowController> chatWindows) {
-        this.chatWindows = chatWindows;
-    }
     @FXML
     private void handleButtonAction(ActionEvent actionEvent) {
         lbl.setText(client.getName());
@@ -83,25 +87,36 @@ public class ClientGUI implements DisplayOutput {
         }
     }
 
-    @Override
     public void show(String output) {
         onlineList.getItems().add(output);
     }
 
     public void onMouseClicked(MouseEvent mouseEvent) {
-        String sumthing = onlineList.getSelectionModel().getSelectedItem();
-        sumthing = sumthing.substring(0, sumthing.indexOf(" ") + 1);
-        ChatWindowController chatWindowController = new ChatWindowController();
-        chatWindows.put(sumthing, chatWindowController);
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("ChatWindow.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Chat with " + sumthing);
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        chatWindows = new ConcurrentHashMap<>();
+        onlineList.setCellFactory(param -> {
+            JFXListCell<String> cell = new JFXListCell();
+            cell.setOnMouseClicked(event -> {
+                String sumthing = cell.getItem();
+                sumthing = sumthing.substring(0, sumthing.indexOf(" ") + 1);
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ChatWindow.fxml"));
+                    Parent par = fxmlLoader.load();
+                    ChatWindowController chatWindowController = fxmlLoader.getController();
+                    chatWindows.put(sumthing, chatWindowController);
+                    Stage stage = new Stage();
+                    stage.setTitle("Chat with " + sumthing);
+                    stage.setScene(new Scene(par));
+                    stage.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            return cell;
+        });
     }
 }

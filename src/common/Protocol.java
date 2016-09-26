@@ -2,6 +2,7 @@ package common;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +40,14 @@ Protocol {
         return bytes;
     }
 
+    public static byte[] stringToBytes(String s) throws UnsupportedEncodingException {
+        byte[] sbytes = s.getBytes(ENCODE);
+        byte[] len = intToBytes(sbytes.length);
+        byte[] result = new byte[sbytes.length + len.length];
+        System.arraycopy(len, 0, result, 0, len.length);
+        System.arraycopy(sbytes, 0, result, len.length, sbytes.length);
+        return result;
+    }
     public static int readInt(InputStream in) throws IOException {
         byte[] bytes = new byte[Integer.BYTES];
         if (in.read(bytes, 0, bytes.length) == -1) throw new IOException();
