@@ -8,7 +8,8 @@ import java.util.regex.Pattern;
 /**
  * Created by trung on 16/09/2016.
  */
-public class Protocol {
+public class
+Protocol {
     public final static int SEND_MSG_CODE = 1;
     public final static int ACCEPT_FILE = 3;
     public final static int DENY_FILE = 4;

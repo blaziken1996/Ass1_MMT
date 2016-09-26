@@ -8,8 +8,13 @@ import com.jfoenix.controls.JFXListView;
 import common.Protocol;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,6 +40,14 @@ public class ClientGUI implements Initializable {
     private Client client;
     private ConcurrentHashMap<String, ChatWindowController> chatWindows;
 
+    public ConcurrentHashMap<String, ChatWindowController> getChatWindows() {
+        return chatWindows;
+    }
+
+    public void setChatWindows(ConcurrentHashMap<String, ChatWindowController> chatWindows) {
+        this.chatWindows = chatWindows;
+    }
+
     public void setClient(Client client) {
         this.client = client;
     }
@@ -53,12 +66,30 @@ public class ClientGUI implements Initializable {
         }
     }
 
+
     public void show(String output) {
         onlineList.getItems().add(output);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+    }
+
+    public void onMouseClicked(MouseEvent mouseEvent) {
+        String sumthing = onlineList.getSelectionModel().getSelectedItem();
+        sumthing = sumthing.substring(0, sumthing.indexOf(" ") + 1);
+        ChatWindowController chatWindowController = new ChatWindowController();
+        chatWindows.put(sumthing, chatWindowController);
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("ChatWindow.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Chat with " + sumthing);
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

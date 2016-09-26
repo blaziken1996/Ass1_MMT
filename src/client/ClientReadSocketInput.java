@@ -34,7 +34,6 @@ public class ClientReadSocketInput extends Task<Void> {
                 switch (Protocol.readInt(in)) {
                     case Protocol.ONLINE_LIST_CODE:
                         int num = Protocol.readInt(in);
-                        clientGUI.show(String.valueOf(num));
                         for (int i = 0; i < num; i++) {
                             clientGUI.show(Protocol.readString(in));
                         }

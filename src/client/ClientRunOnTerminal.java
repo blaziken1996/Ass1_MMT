@@ -25,7 +25,7 @@ public class ClientRunOnTerminal {
             byte[] name = client.getName().getBytes(Protocol.ENCODE);
             client.write(asList(Protocol.intToBytes(name.length), name));
             new ClientReadUserInput(client, ti, to).start();
-            new ClientReadSocketInput(client, to, ti).start();
+            //new ClientReadSocketInput(client, to, ti).start();
         } catch (IOException e) {
             e.printStackTrace();
         }

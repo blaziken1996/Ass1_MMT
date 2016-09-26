@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
 
@@ -60,13 +61,14 @@ public class LoginController {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientGUI.fxml"));
         Parent par = fxmlLoader.load();
         ClientGUI clientGUIController = fxmlLoader.getController();
+        clientGUIController.setChatWindows(new ConcurrentHashMap<String, ChatWindowController>());
         Scene Client = new Scene(par);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setTitle("Client");
         stage.setScene(Client);
         clientGUIController.setClient(client);
         ClientReadSocketInput clientReadSocketInput = new ClientReadSocketInput(client, clientGUIController, null);
-        clientReadSocketInput.start();
+        new Thread(clientReadSocketInput).start();
         stage.show();
     }
 }
