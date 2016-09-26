@@ -1,6 +1,6 @@
 package client;
 
-import common.DisplayOutput;
+import GUI.ClientGUI;
 import common.SendFile;
 
 import java.io.File;
@@ -13,11 +13,11 @@ import java.net.Socket;
 public class ClientSendFile extends Thread {
     private Socket client;
     private File file;
-    private DisplayOutput displayOutput;
+    private ClientGUI clientGUI;
 
-    public ClientSendFile(String host, int port, File file, DisplayOutput displayOutput) {
+    public ClientSendFile(String host, int port, File file, ClientGUI displayOutput) {
         try {
-            this.displayOutput = displayOutput;
+            this.clientGUI = displayOutput;
             client = new Socket(host, port);
             this.file = file;
         } catch (IOException e) {
@@ -30,7 +30,7 @@ public class ClientSendFile extends Thread {
         try {
             SendFile.send(file, client);
             client.close();
-            displayOutput.show("Successfully sent file.");
+            clientGUI.show("Successfully sent file.");
         } catch (IOException e) {
             e.printStackTrace();
         }

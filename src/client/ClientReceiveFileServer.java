@@ -1,6 +1,6 @@
 package client;
 
-import common.DisplayOutput;
+import GUI.ClientGUI;
 import common.ReceiveFile;
 
 import java.io.File;
@@ -17,12 +17,12 @@ public class ClientReceiveFileServer extends Thread {
     private int port;
     private String filePath;
     private ServerSocket server;
-    private DisplayOutput displayOutput;
+    private ClientGUI clientGUI;
 
-    public ClientReceiveFileServer(DisplayOutput displayOutput, String filePath) {
+    public ClientReceiveFileServer(ClientGUI displayOutput, String filePath) {
         try {
             this.filePath = filePath;
-            this.displayOutput = displayOutput;
+            this.clientGUI = displayOutput;
             server = new ServerSocket(0);
             serverAddress = InetAddress.getLocalHost().getHostAddress();
             port = server.getLocalPort();
@@ -46,7 +46,7 @@ public class ClientReceiveFileServer extends Thread {
             File file = new File(filePath);
             ReceiveFile.receive(file, client);
             client.close();
-            displayOutput.show("Successfully received file.");
+            clientGUI.show("Successfully received file.");
         } catch (IOException e) {
             e.printStackTrace();
         }
