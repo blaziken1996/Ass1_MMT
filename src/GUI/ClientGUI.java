@@ -10,14 +10,18 @@ import common.Protocol;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
 
@@ -36,12 +40,19 @@ public class ClientGUI implements DisplayOutput {
 
 
     private Client client;
-
+    private ConcurrentHashMap<String, ChatWindowController> chatWindows;
 
     public void setClient(Client client) {
         this.client = client;
     }
 
+    public ConcurrentHashMap<String, ChatWindowController> getChatWindows() {
+        return chatWindows;
+    }
+
+    public void setChatWindows(ConcurrentHashMap<String, ChatWindowController> chatWindows) {
+        this.chatWindows = chatWindows;
+    }
     @FXML
     private void handleButtonAction(ActionEvent actionEvent) {
         lbl.setText(client.getName());
@@ -64,12 +75,7 @@ public class ClientGUI implements DisplayOutput {
                         return result;
                     }
                 };
-                readList.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-                    @Override
-                    public void handle(WorkerStateEvent event) {
-                        onlineList.setItems(readList.getValue());
-                    }
-                });
+                readList.setOnSucceeded(event -> onlineList.setItems(readList.getValue()));
                 new Thread(readList).start();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -80,5 +86,22 @@ public class ClientGUI implements DisplayOutput {
     @Override
     public void show(String output) {
         onlineList.getItems().add(output);
+    }
+
+    public void onMouseClicked(MouseEvent mouseEvent) {
+        String sumthing = onlineList.getSelectionModel().getSelectedItem();
+        sumthing = sumthing.substring(0, sumthing.indexOf(" ") + 1);
+        ChatWindowController chatWindowController = new ChatWindowController();
+        chatWindows.put(sumthing, chatWindowController);
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("ChatWindow.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Chat with " + sumthing);
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
