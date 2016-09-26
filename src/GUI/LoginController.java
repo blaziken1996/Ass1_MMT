@@ -5,9 +5,9 @@ package GUI;
  */
 
 import client.Client;
-import client.ClientReadSocketInput;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import common.Protocol;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.Socket;
+
+import static java.util.Arrays.asList;
 
 public class LoginController {
 
@@ -43,7 +45,8 @@ public class LoginController {
                 port = Integer.parseInt(portNumber);
                 socket = new Socket(serverIP, port);
                 client = new Client(socket, txtChatID.getText());
-                client.write(client.getName());
+                byte[] name = client.getName().getBytes(Protocol.ENCODE);
+                client.write(asList(Protocol.intToBytes(name.length), name));
             } catch (NumberFormatException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Invalid Port Number");
@@ -61,8 +64,8 @@ public class LoginController {
         stage.setTitle("Client");
         stage.setScene(Client);
         clientGUIController.setClient(client);
-        ClientReadSocketInput clientReadSocketInput = new ClientReadSocketInput(client, clientGUIController, null);
-        clientReadSocketInput.start();
+        //ClientReadSocketInput clientReadSocketInput = new ClientReadSocketInput(client, clientGUIController, null);
+        //new Thread(clientReadSocketInput,"ReadSocket").start();
         stage.show();
     }
 }

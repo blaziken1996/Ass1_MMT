@@ -7,9 +7,19 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import common.DisplayOutput;
 import common.Protocol;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static java.util.Arrays.asList;
 
 public class ClientGUI implements DisplayOutput {
     @FXML
@@ -38,7 +48,32 @@ public class ClientGUI implements DisplayOutput {
         if (actionEvent.getSource() == btnReset) {
             onlineList.getItems().clear();
         } else {
-            client.write(null, Protocol.ONLINE_LIST_CODE);
+            try {
+                client.write(asList(Protocol.intToBytes(Protocol.ONLINE_LIST_CODE)));
+                Task<ObservableList<String>> readList = new Task<ObservableList<String>>() {
+                    @Override
+                    protected ObservableList<String> call() throws Exception {
+                        InputStream in = client.getInputStream();
+                        ObservableList<String> result = FXCollections.observableArrayList();
+                        if (Protocol.readInt(in) == Protocol.ONLINE_LIST_CODE) {
+                            int num = Protocol.readInt(in);
+                            for (int i = 0; i < num; i++) {
+                                result.add(Protocol.readString(in));
+                            }
+                        }
+                        return result;
+                    }
+                };
+                readList.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                    @Override
+                    public void handle(WorkerStateEvent event) {
+                        onlineList.setItems(readList.getValue());
+                    }
+                });
+                new Thread(readList).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
