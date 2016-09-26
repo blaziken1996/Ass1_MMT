@@ -1,49 +1,99 @@
 package client;
 
+import GUI.ChatWindowController;
 import GUI.ClientGUI;
 import common.Protocol;
 import common.ReadInput;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
 
 /**
  * Created by trung on 21/09/2016.
  */
-public class ClientReadSocketInput extends Task<Void> {
+public class ClientReadSocketInput extends Thread {
     private InputStream in;
     private Client client;
     private ReadInput readInput;
     private ClientGUI clientGUI;
+    private ConcurrentHashMap<String, ChatWindowController> chatWindows;
 
-    public ClientReadSocketInput(Client client, ClientGUI clientGUI, ReadInput readInput) {
+    public ClientReadSocketInput(Client client, ClientGUI clientGUI) {
         this.in = client.getInputStream();
         this.clientGUI = clientGUI;
-        this.readInput = readInput;
+        this.chatWindows = clientGUI.getChatWindows();
         this.client = client;
     }
 
     @Override
-    public Void call() {
+    public void run() {
         boolean isRunning = true;
         try {
             while (isRunning) {
                 switch (Protocol.readInt(in)) {
                     case Protocol.ONLINE_LIST_CODE:
+                        ObservableList<String> list = FXCollections.observableArrayList();
                         int num = Protocol.readInt(in);
                         for (int i = 0; i < num; i++) {
-                            clientGUI.show(Protocol.readString(in));
+                            list.add(Protocol.readString(in));
                         }
+                        Task<Void> task = new Task<Void>() {
+                            @Override
+                            protected Void call() throws Exception {
+                                Platform.runLater(() -> {
+                                    clientGUI.getOnlineList().setItems(list);
+                                });
+                                return null;
+                            }
+                        };
+                        new Thread(task).start();
                         break;
                     case Protocol.SEND_MSG_CODE:
-                        clientGUI.show(Protocol.readString(in) + "(" + Protocol.readString(in) + "): " + Protocol.readString(in));
-                        break;
-                    case Protocol.FILE_REQ_CODE:
                         String name = Protocol.readString(in);
                         String address = Protocol.readString(in);
+                        String message = Protocol.readString(in);
+                        ChatWindowController chat = chatWindows.get(address);
+                        if (chat == null) {
+                            task = new Task<Void>() {
+                                @Override
+                                protected Void call() {
+                                    Platform.runLater(() -> {
+                                        ChatWindowController controller = null;
+                                        try {
+                                            controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + "(" + address + ")", address);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        controller.getTxtChat().appendText(name + "(" + address + "): " + message + "\n");
+                                    });
+                                    return null;
+                                }
+                            };
+                            new Thread(task).start();
+                        } else {
+                            task = new Task<Void>() {
+                                @Override
+                                protected Void call() throws Exception {
+                                    Platform.runLater(() -> {
+                                        chat.getTxtChat().appendText(name + "(" + address + "): " + message + "\n");
+                                    });
+                                    return null;
+                                }
+                            };
+                            new Thread(task).start();
+                        }
+                        //clientGUI.show(Protocol.readString(in) + "(" + Protocol.readString(in) + "): " + Protocol.readString(in));
+                        break;
+                    case Protocol.FILE_REQ_CODE:
+                        name = Protocol.readString(in);
+                        address = Protocol.readString(in);
                         String filename = Protocol.readString(in);
                         clientGUI.show(name + "(" + address + "): want to send you " + filename
                                 + ". Do you want to receive this file? (Y: Yes, N: No)");
@@ -103,6 +153,5 @@ public class ClientReadSocketInput extends Task<Void> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 }

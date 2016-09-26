@@ -8,7 +8,7 @@
             minWidth="-Infinity" prefHeight="552.0" prefWidth="265.0" xmlns="http://javafx.com/javafx/8.0.60"
             fx:controller="GUI.ClientGUI">
     <children>
-        <JFXListView fx:id="onlineList" layoutX="8.0" layoutY="213.0" onMouseClicked="#onMouseClicked"
+        <JFXListView fx:id="onlineList" layoutX="8.0" layoutY="213.0"
                      prefHeight="335.0" prefWidth="249.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="8.0"
                      AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="213.0"/>
         <Label fx:id="lbl" layoutX="33.0" layoutY="50.0" prefHeight="28.0" prefWidth="58.0" text="Label"/>

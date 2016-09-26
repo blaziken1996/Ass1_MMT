@@ -1,5 +1,7 @@
 package server;
 
+import common.Protocol;
+
 import java.io.IOException;
 import java.net.*;
 import java.util.Enumeration;
@@ -11,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Server {
     private ServerSocket serverSocket;
     private InetAddress inetAddress;
-    private ConcurrentHashMap<String, ClientSocket> clientMap;
+    private ConcurrentHashMap<String, ServerClient> clientMap;
 
     public Server(int port) throws IOException {
         serverSocket = new ServerSocket(port);
@@ -28,7 +30,9 @@ public class Server {
         try {
             Server server = new Server(port);
             System.out.println("Server socket opens at " + server.getInetAddress() + " port " + port);
-            while (true) new ServerListener(new ClientSocket(server.serverSocket.accept()), server.clientMap).start();
+            Socket s;
+            while (true) new ServerListener(new ServerClient(s = server.serverSocket.accept()
+                    , Protocol.readString(s.getInputStream())), server.clientMap).start();
         } catch (IOException e) {
             e.printStackTrace();
         }

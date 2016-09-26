@@ -60,7 +60,8 @@ Protocol {
     public static String readString(InputStream in) throws IOException {
         int len = readInt(in);
         byte[] bytes = new byte[len];
-        for (int i = 0; i < len; i++) bytes[i] = (byte) in.read();
+        //for (int i = 0; i < len; i++) bytes[i] = (byte) in.read();
+        in.read(bytes, 0, len);
         return new String(bytes, Protocol.ENCODE);
     }
 
