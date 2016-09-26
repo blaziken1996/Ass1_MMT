@@ -1,16 +1,19 @@
-package GUI;/**
+package GUI;
+/**
  * Created by Dark Light on 22/09/2016.
  */
 
 import client.Client;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 import common.Protocol;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
@@ -69,18 +72,29 @@ public class ClientGUI implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ChatWindowController.chatWindows = chatWindows = new ConcurrentHashMap<>();
-        onlineList.setCellFactory(param -> {
-            JFXListCell<String> cell = new JFXListCell();
-            cell.setOnMouseClicked(event -> {
-                String s = cell.getItem();
-                String[] ss = s.split("\\s+");
-                try {
-                    ChatWindowController.ChatWindowsCreate("Chat with " + ss[1] + "(" + ss[0] + ")", ss[0]);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            return cell;
+        onlineList.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> param) {
+                ListCell<String> listCell = new ListCell<String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(item);
+                    }
+                };
+                listCell.setOnMouseClicked(event -> {
+                    String s = listCell.getText();
+                    if (s == null) return;
+                    String[] ss = s.split("\\s+");
+                    try {
+                        ChatWindowController.ChatWindowsCreate("Chat with " + ss[1] + "(" + ss[0] + ")", ss[0]);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                return listCell;
+            }
         });
     }
 
