@@ -72,6 +72,7 @@ public class ClientReadSocketInput extends Thread {
                                             e.printStackTrace();
                                         }
                                         controller.getTxtChat().appendText(name + "(" + address + "): " + message + "\n");
+                                        controller.getChatScreen().getItems().add(name + "(" + address + "): " + message + "\n");
                                     });
                                     return null;
                                 }
@@ -83,6 +84,7 @@ public class ClientReadSocketInput extends Thread {
                                 protected Void call() throws Exception {
                                     Platform.runLater(() -> {
                                         chat.getTxtChat().appendText(name + "(" + address + "): " + message + "\n");
+                                        chat.getChatScreen().getItems().add(name + "(" + address + "): " + message + "\n");
                                     });
                                     return null;
                                 }
