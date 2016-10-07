@@ -3,6 +3,8 @@ package common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +42,18 @@ Protocol {
         return bytes;
     }
 
+    public static byte[] inetAddressToBytes(InetSocketAddress address) {
+        byte[] result = new byte[8];
+        System.arraycopy(address.getAddress().getAddress(), 0, result, 0, 4);
+        System.arraycopy(Protocol.intToBytes(address.getPort()), 0, result, 4, 4);
+        return result;
+    }
+
+    public static InetSocketAddress readInetAddress(InputStream in) throws IOException {
+        byte[] buffer = new byte[4];
+        in.read(buffer, 0, 4);
+        return new InetSocketAddress(InetAddress.getByAddress(buffer), Protocol.readInt(in));
+    }
     public static byte[] stringToBytes(String s) throws UnsupportedEncodingException {
         byte[] sbytes = s.getBytes(ENCODE);
         byte[] len = intToBytes(sbytes.length);

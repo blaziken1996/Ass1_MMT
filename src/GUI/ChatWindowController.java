@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,8 +34,8 @@ import static java.util.Arrays.asList;
  */
 public class ChatWindowController implements Initializable {
     public static Client client;
-    public static ConcurrentHashMap<String, ChatWindowController> chatWindows;
-    public static ConcurrentHashMap<String, File> fileReceiver;
+    public static ConcurrentHashMap<InetSocketAddress, ChatWindowController> chatWindows;
+    public static ConcurrentHashMap<InetSocketAddress, File> fileReceiver;
 
     @FXML
     private AnchorPane pane;
@@ -46,10 +47,10 @@ public class ChatWindowController implements Initializable {
     private JFXListView<String> chatScreen;
     @FXML
     private JFXButton btnSendFile;
-    private String receiverAddress;
+    private InetSocketAddress receiverAddress;
 
 
-    public static ChatWindowController ChatWindowsCreate(String title, String address) throws IOException {
+    public static ChatWindowController ChatWindowsCreate(String title, InetSocketAddress address) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ChatWindowController.class.getResource("ChatWindow.fxml"));
         Parent par = fxmlLoader.load();
         Scene scene = new Scene(par);
@@ -67,7 +68,7 @@ public class ChatWindowController implements Initializable {
         return chatWindowController;
     }
 
-    private void setReceiverAddress(String receiverAddress) {
+    private void setReceiverAddress(InetSocketAddress receiverAddress) {
         this.receiverAddress = receiverAddress;
     }
 
@@ -86,7 +87,7 @@ public class ChatWindowController implements Initializable {
             System.out.println(file);
             fileReceiver.put(receiverAddress, file);
             try {
-                client.write(asList(Protocol.intToBytes(Protocol.FILE_REQ_CODE), Protocol.stringToBytes(receiverAddress),
+                client.write(asList(Protocol.intToBytes(Protocol.FILE_REQ_CODE), Protocol.inetAddressToBytes(receiverAddress),
                         Protocol.stringToBytes(file.getName())));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -98,9 +99,9 @@ public class ChatWindowController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         btnSend.setOnAction(event -> {
             try {
-                chatScreen.getItems().add("Me: " + txtEnter.getText() + "\n");
+                chatScreen.getItems().add("Me: " + txtEnter.getText());
                 client.write(asList(Protocol.intToBytes(Protocol.SEND_MSG_CODE),
-                        Protocol.stringToBytes(receiverAddress), Protocol.stringToBytes(txtEnter.getText())));
+                        Protocol.inetAddressToBytes(receiverAddress), Protocol.stringToBytes(txtEnter.getText())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -122,7 +123,7 @@ public class ChatWindowController implements Initializable {
         return chatScreen;
     }
 
-    public boolean showAcceptFilePopup(String fileName, String name, String address) {
+    public boolean showAcceptFilePopup(String fileName, String name, InetSocketAddress address) {
 //        JFXPopup popup = new JFXPopup();
 //        popup.setPrefSize(150, 300);
 //        HBox hBox = new HBox();
@@ -147,7 +148,7 @@ public class ChatWindowController implements Initializable {
 //        btnCancel.setOnAction(event -> popup.close() );
 //        popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
 //        return  result[0];
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to accept file " + fileName + " from " + name + "(" + address + ") ?", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to accept file " + fileName + " from " + name + address + " ?", ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         return alert.getResult() == ButtonType.YES;
     }

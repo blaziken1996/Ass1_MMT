@@ -5,6 +5,7 @@ import common.ClientSocket;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,12 +13,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by trung on 16/09/2016.
  */
 public class Client extends ClientSocket {
-    private ConcurrentHashMap<String, File> receiverFileMap;
+    private ConcurrentHashMap<InetSocketAddress, File> receiverFileMap;
     private ClientGUI clientGUI;
 
     public Client(Socket socket, String name) throws IOException {
         super(socket, name);
-        this.address = socket.getLocalSocketAddress().toString().substring(1);
+        address = (InetSocketAddress) socket.getLocalSocketAddress();
         receiverFileMap = new ConcurrentHashMap<>();
     }
 
@@ -29,7 +30,7 @@ public class Client extends ClientSocket {
         this.clientGUI = clientGUI;
     }
 
-    public ConcurrentHashMap<String, File> getReceiverFileMap() {
+    public ConcurrentHashMap<InetSocketAddress, File> getReceiverFileMap() {
         return receiverFileMap;
     }
 }

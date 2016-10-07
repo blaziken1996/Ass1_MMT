@@ -3,7 +3,6 @@ package client;
 import GUI.ChatWindowController;
 import GUI.ClientGUI;
 import common.Protocol;
-import common.ReadInput;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +11,7 @@ import javafx.concurrent.Task;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
@@ -22,9 +22,8 @@ import static java.util.Arrays.asList;
 public class ClientReadSocketInput extends Thread {
     private InputStream in;
     private Client client;
-    private ReadInput readInput;
     private ClientGUI clientGUI;
-    private ConcurrentHashMap<String, ChatWindowController> chatWindows;
+    private ConcurrentHashMap<InetSocketAddress, ChatWindowController> chatWindows;
 
     public ClientReadSocketInput(Client client, ClientGUI clientGUI) {
         this.in = client.getInputStream();
@@ -44,7 +43,7 @@ public class ClientReadSocketInput extends Thread {
                         ObservableList<String> list = FXCollections.observableArrayList();
                         int num = Protocol.readInt(in);
                         for (int i = 0; i < num; i++) {
-                            list.add(Protocol.readString(in));
+                            list.add(Protocol.readInetAddress(in).toString().substring(1) + " " + Protocol.readString(in));
                         }
                         Task<Void> task = new Task<Void>() {
                             @Override
@@ -59,7 +58,7 @@ public class ClientReadSocketInput extends Thread {
                         break;
                     case Protocol.SEND_MSG_CODE:
                         String name = Protocol.readString(in);
-                        String address = Protocol.readString(in);
+                        InetSocketAddress address = Protocol.readInetAddress(in);
                         String message = Protocol.readString(in);
                         ChatWindowController chat = chatWindows.get(address);
                         if (chat == null) {
@@ -69,23 +68,30 @@ public class ClientReadSocketInput extends Thread {
                                     Platform.runLater(() -> {
                                         ChatWindowController controller = null;
                                         try {
-                                            controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + "(" + address + ")", address);
+                                            controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + address, address);
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-                                        controller.showMessage(name + "(" + address + "): " + message);
+                                        controller.showMessage(name + address + ": " + message);
                                     });
                                     return null;
                                 }
                             };
                             new Thread(task).start();
-
+                        } else {
+                            new Thread(new Task<Void>() {
+                                @Override
+                                protected Void call() throws Exception {
+                                    chat.showMessage(name + address + ": " + message);
+                                    return null;
+                                }
+                            }).start();
                         }
                         //clientGUI.show(Protocol.readString(in) + "(" + Protocol.readString(in) + "): " + Protocol.readString(in));
                         break;
                     case Protocol.FILE_REQ_CODE:
                         name = Protocol.readString(in);
-                        address = Protocol.readString(in);
+                        address = Protocol.readInetAddress(in);
                         String filename = Protocol.readString(in);
                         ChatWindowController controller = chatWindows.get(address);
                         final boolean[] confirm = {false};
@@ -107,17 +113,17 @@ public class ClientReadSocketInput extends Thread {
                                             server.start();
                                             try {
                                                 client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
-                                                        Protocol.stringToBytes(address),
+                                                        Protocol.inetAddressToBytes(address),
                                                         Protocol.stringToBytes(client.getName()),
-                                                        Protocol.stringToBytes(client.getAddress()),
-                                                        Protocol.stringToBytes(server.getServerAddress()), Protocol.intToBytes(server.getPort())));
+                                                        Protocol.inetAddressToBytes(client.getAddress()),
+                                                        Protocol.inetAddressToBytes(server.getServerAddress())));
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
                                         } else {
                                             try {
                                                 client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
-                                                        Protocol.stringToBytes(address)));
+                                                        Protocol.inetAddressToBytes(address)));
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
@@ -139,17 +145,17 @@ public class ClientReadSocketInput extends Thread {
                                             server.start();
                                             try {
                                                 client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
-                                                        Protocol.stringToBytes(address),
+                                                        Protocol.inetAddressToBytes(address),
                                                         Protocol.stringToBytes(client.getName()),
-                                                        Protocol.stringToBytes(client.getAddress()),
-                                                        Protocol.stringToBytes(server.getServerAddress()), Protocol.intToBytes(server.getPort())));
+                                                        Protocol.inetAddressToBytes(client.getAddress()),
+                                                        Protocol.inetAddressToBytes(server.getServerAddress())));
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
                                         } else {
                                             try {
                                                 client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
-                                                        Protocol.stringToBytes(address)));
+                                                        Protocol.inetAddressToBytes(address)));
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
@@ -162,18 +168,17 @@ public class ClientReadSocketInput extends Thread {
                         break;
                     case Protocol.ACCEPT_FILE:
                         name = Protocol.readString(in);
-                        address = Protocol.readString(in);
-                        String host = Protocol.readString(in);
-                        int port = Protocol.readInt(in);
-                        chatWindows.get(address).showMessage(name + "(" + address + ") has accepted your request. Sending file...");
+                        address = Protocol.readInetAddress(in);
+                        InetSocketAddress host = Protocol.readInetAddress(in);
                         System.out.println("From readsocket: " + client.getReceiverFileMap().get(address) + " " + address);
-                        new ClientSendFile(host, port, client.getReceiverFileMap().get(address)).start();
+                        chatWindows.get(address).showMessage(name + address + " has accepted your request. Sending file...");
+                        new ClientSendFile(host.getAddress(), host.getPort(), client.getReceiverFileMap().get(address)).start();
                         client.getReceiverFileMap().remove(address);
                         break;
                     case Protocol.DENY_FILE:
                         name = Protocol.readString(in);
-                        address = Protocol.readString(in);
-                        chatWindows.get(address).showMessage(name + "(" + address + ") has denied your request.");
+                        address = Protocol.readInetAddress(in);
+                        chatWindows.get(address).showMessage(name + address + " has denied your request.");
                         client.getReceiverFileMap().remove(address);
                         break;
                     case Protocol.END_CONNECT_CODE:

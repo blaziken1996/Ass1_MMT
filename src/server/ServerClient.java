@@ -3,21 +3,15 @@ package server;
 import common.ClientSocket;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
- * Created by trung on 16/09/2016.
+ * Created by trung on 07/10/2016.
  */
 public class ServerClient extends ClientSocket {
-
-    public ServerClient(Socket socket, String name) throws IOException {
+    protected ServerClient(Socket socket, String name) throws IOException {
         super(socket, name);
-        address = socket.getRemoteSocketAddress().toString().substring(1);
+        address = (InetSocketAddress) socket.getRemoteSocketAddress();
     }
-
-    public void close() throws IOException {
-        outputStream.flush();
-        socket.close();
-    }
-
 }

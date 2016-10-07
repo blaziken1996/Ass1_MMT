@@ -3,6 +3,7 @@ package common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
 
@@ -10,11 +11,11 @@ import java.util.List;
  * Created by trung on 9/26/16.
  */
 public abstract class ClientSocket {
-    protected Socket socket;
-    protected InputStream inputStream;
-    protected OutputStream outputStream;
-    protected String name;
-    protected String address;
+    protected InetSocketAddress address;
+    private Socket socket;
+    private InputStream inputStream;
+    private OutputStream outputStream;
+    private String name;
 
     protected ClientSocket(Socket socket, String name) throws IOException {
         this.socket = socket;
@@ -23,7 +24,12 @@ public abstract class ClientSocket {
         outputStream = socket.getOutputStream();
     }
 
-    public String getAddress() {
+    public void close() throws IOException {
+        outputStream.flush();
+        socket.close();
+    }
+
+    public InetSocketAddress getAddress() {
         return address;
     }
 

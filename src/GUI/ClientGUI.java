@@ -17,6 +17,7 @@ import javafx.util.Callback;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +39,8 @@ public class ClientGUI implements Initializable {
 
 
     private Client client;
-    private ConcurrentHashMap<String, ChatWindowController> chatWindows;
-    private ConcurrentHashMap<String, File> fileReceiver;
+    private ConcurrentHashMap<InetSocketAddress, ChatWindowController> chatWindows;
+    private ConcurrentHashMap<InetSocketAddress, File> fileReceiver;
 
     public JFXListView<String> getOnlineList() {
         return onlineList;
@@ -51,7 +52,7 @@ public class ClientGUI implements Initializable {
         lbl.setText(client.getName());
     }
 
-    public ConcurrentHashMap<String, ChatWindowController> getChatWindows() {
+    public ConcurrentHashMap<InetSocketAddress, ChatWindowController> getChatWindows() {
         return chatWindows;
     }
 
@@ -88,9 +89,9 @@ public class ClientGUI implements Initializable {
                 listCell.setOnMouseClicked(event -> {
                     String s = listCell.getText();
                     if (s == null) return;
-                    String[] ss = s.split("\\s+");
+                    String[] ss = s.split("[:\\s]+");
                     try {
-                        ChatWindowController.ChatWindowsCreate("Chat with " + ss[1] + "(" + ss[0] + ")", ss[0]);
+                        ChatWindowController.ChatWindowsCreate("Chat with " + ss[2] + "(" + ss[0] + ":" + ss[1] + ")", new InetSocketAddress(ss[0], Integer.parseInt(ss[1])));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -101,7 +102,7 @@ public class ClientGUI implements Initializable {
         });
     }
 
-    public ConcurrentHashMap<String, File> getFileReceiver() {
+    public ConcurrentHashMap<InetSocketAddress, File> getFileReceiver() {
         return fileReceiver;
     }
 }

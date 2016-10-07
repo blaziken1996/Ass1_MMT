@@ -1,9 +1,11 @@
 package server;
 
+import common.ClientSocket;
 import common.Protocol;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,11 +19,11 @@ import static java.util.Arrays.asList;
 
 public class ServerListener extends Thread {
 
-    private ServerClient client;
-    private ConcurrentHashMap<String, ServerClient> clientAddressMap;
+    private ClientSocket client;
+    private ConcurrentHashMap<InetSocketAddress, ClientSocket> clientAddressMap;
     //private String clientAddress;
 
-    public ServerListener(ServerClient socket, ConcurrentHashMap<String, ServerClient> addressmap) {
+    public ServerListener(ClientSocket socket, ConcurrentHashMap<InetSocketAddress, ClientSocket> addressmap) {
         client = socket;
         clientAddressMap = addressmap;
     }
@@ -42,10 +44,10 @@ public class ServerListener extends Thread {
                         sendList();
                         break;
                     case Protocol.SEND_MSG_CODE:
-                        sendMessage(Protocol.readString(input), Protocol.readString(input));
+                        sendMessage(Protocol.readInetAddress(input), Protocol.readString(input));
                         break;
                     case Protocol.FILE_REQ_CODE:
-                        sendFileRequest(Protocol.readString(input), Protocol.readString(input));
+                        sendFileRequest(Protocol.readInetAddress(input), Protocol.readString(input));
                         break;
                     case Protocol.END_CONNECT_CODE:
                         isConnected = false;
@@ -53,11 +55,11 @@ public class ServerListener extends Thread {
                         clientAddressMap.remove(client.getAddress());
                         break;
                     case Protocol.ACCEPT_FILE:
-                        fileReqAccept(Protocol.readString(input), Protocol.readString(input),
-                                Protocol.readString(input), Protocol.readString(input), Protocol.readInt(input));
+                        fileReqAccept(Protocol.readInetAddress(input), Protocol.readString(input),
+                                Protocol.readInetAddress(input), Protocol.readInetAddress(input));
                         break;
                     case Protocol.DENY_FILE:
-                        fileReqDenied(Protocol.readString(input));
+                        fileReqDenied(Protocol.readInetAddress(input));
                         break;
                 }
             }
@@ -79,8 +81,9 @@ public class ServerListener extends Thread {
             List<byte[]> packet = new ArrayList<>(clientAddressMap.size() * 2 + 2);
             packet.add(Protocol.intToBytes(Protocol.ONLINE_LIST_CODE));
             packet.add(Protocol.intToBytes(clientAddressMap.size()));
-            for (Map.Entry<String, ServerClient> e : clientAddressMap.entrySet()) {
-                packet.add(Protocol.stringToBytes(e.getKey() + " " + e.getValue().getName()));
+            for (Map.Entry<InetSocketAddress, ClientSocket> e : clientAddressMap.entrySet()) {
+                packet.add(Protocol.inetAddressToBytes(e.getKey()));
+                packet.add(Protocol.stringToBytes(e.getValue().getName()));
             }
             client.write(packet);
         } catch (IOException e) {
@@ -89,30 +92,21 @@ public class ServerListener extends Thread {
 
     }
 
-    private void fileReqDenied(String fromAddress) {
-        /*clientAddressMap.get(fromAddress).write(asList(client.getName(),
-                client.getSocket().getRemoteSocketAddress().toString()), Protocol.DENY_FILE);*/
+    private void fileReqDenied(InetSocketAddress fromAddress) {
         try {
-            //byte[] name = client.getName().getBytes(Protocol.ENCODE);
-            //byte[] address = clientAddress.getBytes(Protocol.ENCODE);
-            //clientAddressMap.get(fromAddress).write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
-            //      Protocol.intToBytes(name.length), name, Protocol.intToBytes(address.length), address));
             clientAddressMap.get(fromAddress).write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
-                    Protocol.stringToBytes(client.getName()), Protocol.stringToBytes(client.getAddress())));
+                    Protocol.stringToBytes(client.getName()), Protocol.inetAddressToBytes(client.getAddress())));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private boolean sendFileRequest(String receiver, String filename) {
-        ServerClient recei = clientAddressMap.get(receiver);
-        if (recei == null) return false;
+    private boolean sendFileRequest(InetSocketAddress receiveradd, String filename) {
+        ClientSocket receiver = clientAddressMap.get(receiveradd);
+        if (receiver == null) return false;
         try {
-            /*byte[] name = client.getName().getBytes(Protocol.ENCODE);
-            byte[] address = clientAddress.getBytes(Protocol.ENCODE);
-            byte[] file = filename.getBytes(Protocol.ENCODE);*/
-            recei.write(asList(Protocol.intToBytes(Protocol.FILE_REQ_CODE)
-                    , Protocol.stringToBytes(client.getName()), Protocol.stringToBytes(client.getAddress()),
+            receiver.write(asList(Protocol.intToBytes(Protocol.FILE_REQ_CODE)
+                    , Protocol.stringToBytes(client.getName()), Protocol.inetAddressToBytes(client.getAddress()),
                     Protocol.stringToBytes(filename)));
             return true;
 
@@ -124,7 +118,7 @@ public class ServerListener extends Thread {
                 client.getSocket().getRemoteSocketAddress().toString(), filename), Protocol.FILE_REQ_CODE);*/
     }
 
-    private void fileReqAccept(String receiver, String name, String address, String server, int port) {
+    private void fileReqAccept(InetSocketAddress receiver, String name, InetSocketAddress address, InetSocketAddress server) {
         /*clientAddressMap.get(receiver).write(asList(name, address, server, port), Protocol.ACCEPT_FILE);*/
         try {
             /*byte[] nam = name.getBytes(Protocol.ENCODE);
@@ -132,29 +126,27 @@ public class ServerListener extends Thread {
             byte[] ser = server.getBytes(Protocol.ENCODE);*/
 
             clientAddressMap.get(receiver).write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
-                    Protocol.stringToBytes(name), Protocol.stringToBytes(address),
-                    Protocol.stringToBytes(server), Protocol.intToBytes(port)));
+                    Protocol.stringToBytes(name), Protocol.inetAddressToBytes(address),
+                    Protocol.inetAddressToBytes(server)));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private boolean sendMessage(String toAddress, String message) {
+    private boolean sendMessage(InetSocketAddress toAddress, String message) {
         try {
-
-
-            ServerClient receiver = clientAddressMap.get(toAddress);
-        if (receiver != null) {
-            //byte[] name = client.getName().getBytes(Protocol.ENCODE);
-            //byte[] address = clientAddress.getBytes(Protocol.ENCODE);
-            //byte[] mess = message.getBytes(Protocol.ENCODE);
-            receiver.write(asList(Protocol.intToBytes(Protocol.SEND_MSG_CODE),
-                    Protocol.stringToBytes(client.getName()), Protocol.stringToBytes(client.getAddress()),
-                    Protocol.stringToBytes(message)));
+            ClientSocket receiver = clientAddressMap.get(toAddress);
+            if (receiver != null) {
+                //byte[] name = client.getName().getBytes(Protocol.ENCODE);
+                //byte[] address = clientAddress.getBytes(Protocol.ENCODE);
+                //byte[] mess = message.getBytes(Protocol.ENCODE);
+                receiver.write(asList(Protocol.intToBytes(Protocol.SEND_MSG_CODE),
+                        Protocol.stringToBytes(client.getName()), Protocol.inetAddressToBytes(client.getAddress()),
+                        Protocol.stringToBytes(message)));
             /*receiver.write(asList(client.getName(),
                     client.getSocket().getRemoteSocketAddress().toString(), message), Protocol.SEND_MSG_CODE);*/
-            return true;
-        } else return false;
+                return true;
+            } else return false;
         } catch (IOException e) {
             e.printStackTrace();
             return false;

@@ -4,7 +4,7 @@ import common.ReceiveFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -12,8 +12,7 @@ import java.net.Socket;
  * Created by trung on 22/09/2016.
  */
 public class ClientReceiveFileServer extends Thread {
-    private String serverAddress;
-    private int port;
+    private InetSocketAddress serverAddress;
     private File saveFile;
     private ServerSocket server;
 
@@ -21,19 +20,14 @@ public class ClientReceiveFileServer extends Thread {
         try {
             this.saveFile = filePath;
             server = new ServerSocket(0);
-            serverAddress = InetAddress.getLocalHost().getHostAddress();
-            port = server.getLocalPort();
+            serverAddress = (InetSocketAddress) server.getLocalSocketAddress();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public String getServerAddress() {
+    public InetSocketAddress getServerAddress() {
         return serverAddress;
-    }
-
-    public int getPort() {
-        return port;
     }
 
     @Override
