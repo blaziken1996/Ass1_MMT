@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +32,7 @@ public class ClientReadSocketInput extends Thread {
         this.chatWindows = clientGUI.getChatWindows();
         this.client = client;
     }
+
 
     @Override
     public void run() {
@@ -71,25 +73,13 @@ public class ClientReadSocketInput extends Thread {
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-                                        controller.getTxtChat().appendText(name + "(" + address + "): " + message + "\n");
-                                        controller.getChatScreen().getItems().add(name + "(" + address + "): " + message + "\n");
+                                        controller.showMessage(name + "(" + address + "): " + message);
                                     });
                                     return null;
                                 }
                             };
                             new Thread(task).start();
-                        } else {
-                            task = new Task<Void>() {
-                                @Override
-                                protected Void call() throws Exception {
-                                    Platform.runLater(() -> {
-                                        chat.getTxtChat().appendText(name + "(" + address + "): " + message + "\n");
-                                        chat.getChatScreen().getItems().add(name + "(" + address + "): " + message + "\n");
-                                    });
-                                    return null;
-                                }
-                            };
-                            new Thread(task).start();
+
                         }
                         //clientGUI.show(Protocol.readString(in) + "(" + Protocol.readString(in) + "): " + Protocol.readString(in));
                         break;
@@ -97,38 +87,77 @@ public class ClientReadSocketInput extends Thread {
                         name = Protocol.readString(in);
                         address = Protocol.readString(in);
                         String filename = Protocol.readString(in);
-                        clientGUI.show(name + "(" + address + "): want to send you " + filename
-                                + ". Do you want to receive this file? (Y: Yes, N: No)");
-                        boolean noAnswer = true;
-                        while (noAnswer) {
-                            String ans = readInput.read();
-                            if (ans.compareTo("Y") == 0) {
-                                noAnswer = false;
-                                clientGUI.show("Input path to save file: ");
-                                do {
-                                    ans = readInput.read();
-                                } while (ans.isEmpty());
-                                ClientReceiveFileServer server = new ClientReceiveFileServer(clientGUI, ans);
-                                server.start();
-                                byte[] add = address.getBytes(Protocol.ENCODE);
-                                byte[] clientname = client.getName().getBytes(Protocol.ENCODE);
-                                byte[] clientadd = client.getAddress().getBytes(Protocol.ENCODE);
-                                byte[] serveradd = server.getServerAddress().getBytes(Protocol.ENCODE);
-
-                                client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
-                                        Protocol.intToBytes(add.length), add,
-                                        Protocol.intToBytes(clientname.length), clientname,
-                                        Protocol.intToBytes(clientadd.length), clientadd,
-                                        Protocol.intToBytes(serveradd.length), serveradd, Protocol.intToBytes(server.getPort())));
-                            } else if (ans.compareTo("N") == 0) {
-                                clientGUI.show("You deny file");
-                                noAnswer = false;
-                                byte[] add = address.getBytes(Protocol.ENCODE);
-                                client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
-                                        Protocol.intToBytes(add.length), add));
-                            } else {
-                                clientGUI.show("Do you want to receive this file? (Y: Yes, N: No)");
-                            }
+                        ChatWindowController controller = chatWindows.get(address);
+                        final boolean[] confirm = {false};
+                        if (controller == null) {
+                            task = new Task<Void>() {
+                                @Override
+                                protected Void call() {
+                                    Platform.runLater(() -> {
+                                        ChatWindowController controller = null;
+                                        try {
+                                            controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + "(" + address + ")", address);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        confirm[0] = controller.showAcceptFilePopup(filename, name, address);
+                                        if (confirm[0]) {
+                                            File saveFile = controller.saveFileLocation();
+                                            ClientReceiveFileServer server = new ClientReceiveFileServer(saveFile);
+                                            server.start();
+                                            try {
+                                                client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
+                                                        Protocol.stringToBytes(address),
+                                                        Protocol.stringToBytes(client.getName()),
+                                                        Protocol.stringToBytes(client.getAddress()),
+                                                        Protocol.stringToBytes(server.getServerAddress()), Protocol.intToBytes(server.getPort())));
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        } else {
+                                            try {
+                                                client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
+                                                        Protocol.stringToBytes(address)));
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    return null;
+                                }
+                            };
+                            new Thread(task).start();
+                        } else {
+                            new Thread(new Task<Void>() {
+                                @Override
+                                protected Void call() throws Exception {
+                                    Platform.runLater(() -> {
+                                        confirm[0] = controller.showAcceptFilePopup(filename, name, address);
+                                        if (confirm[0]) {
+                                            File saveFile = controller.saveFileLocation();
+                                            ClientReceiveFileServer server = new ClientReceiveFileServer(saveFile);
+                                            server.start();
+                                            try {
+                                                client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
+                                                        Protocol.stringToBytes(address),
+                                                        Protocol.stringToBytes(client.getName()),
+                                                        Protocol.stringToBytes(client.getAddress()),
+                                                        Protocol.stringToBytes(server.getServerAddress()), Protocol.intToBytes(server.getPort())));
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        } else {
+                                            try {
+                                                client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
+                                                        Protocol.stringToBytes(address)));
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    return null;
+                                }
+                            }).start();
                         }
                         break;
                     case Protocol.ACCEPT_FILE:
@@ -136,14 +165,15 @@ public class ClientReadSocketInput extends Thread {
                         address = Protocol.readString(in);
                         String host = Protocol.readString(in);
                         int port = Protocol.readInt(in);
-                        clientGUI.show(name + "(" + address + ") accepts your file. Sending file...");
-                        new ClientSendFile(host, port, client.getReceiverFileMap().get(address), clientGUI).start();
+                        chatWindows.get(address).showMessage(name + "(" + address + ") has accepted your request. Sending file...");
+                        System.out.println("From readsocket: " + client.getReceiverFileMap().get(address) + " " + address);
+                        new ClientSendFile(host, port, client.getReceiverFileMap().get(address)).start();
                         client.getReceiverFileMap().remove(address);
                         break;
                     case Protocol.DENY_FILE:
                         name = Protocol.readString(in);
                         address = Protocol.readString(in);
-                        clientGUI.show(name + "(" + address + ") denies your file.");
+                        chatWindows.get(address).showMessage(name + "(" + address + ") has denied your request.");
                         client.getReceiverFileMap().remove(address);
                         break;
                     case Protocol.END_CONNECT_CODE:

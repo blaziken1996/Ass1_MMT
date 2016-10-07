@@ -15,6 +15,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -38,6 +39,7 @@ public class ClientGUI implements Initializable {
 
     private Client client;
     private ConcurrentHashMap<String, ChatWindowController> chatWindows;
+    private ConcurrentHashMap<String, File> fileReceiver;
 
     public JFXListView<String> getOnlineList() {
         return onlineList;
@@ -45,6 +47,7 @@ public class ClientGUI implements Initializable {
 
     public void setClient(Client client) {
         ChatWindowController.client = this.client = client;
+        ChatWindowController.fileReceiver = fileReceiver = client.getReceiverFileMap();
         lbl.setText(client.getName());
     }
 
@@ -98,4 +101,7 @@ public class ClientGUI implements Initializable {
         });
     }
 
+    public ConcurrentHashMap<String, File> getFileReceiver() {
+        return fileReceiver;
+    }
 }
