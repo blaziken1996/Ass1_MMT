@@ -32,6 +32,30 @@ public class ClientReadSocketInput extends Thread {
         this.client = client;
     }
 
+    private void responseFileRequest(ChatWindowController controller, String filename, String name, InetSocketAddress address) {
+        boolean confirm = controller.showAcceptFilePopup(filename, name, address);
+        if (confirm) {
+            File saveFile = controller.saveFileLocation(filename);
+            ClientReceiveFileServer server = new ClientReceiveFileServer(saveFile);
+            server.start();
+            try {
+                client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
+                        Protocol.inetAddressToBytes(address),
+                        Protocol.stringToBytes(client.getName()),
+                        Protocol.inetAddressToBytes(client.getAddress()),
+                        Protocol.inetAddressToBytes(server.getServerAddress())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
+                        Protocol.inetAddressToBytes(address)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public void run() {
@@ -94,9 +118,8 @@ public class ClientReadSocketInput extends Thread {
                         address = Protocol.readInetAddress(in);
                         String filename = Protocol.readString(in);
                         ChatWindowController controller = chatWindows.get(address);
-                        final boolean[] confirm = {false};
                         if (controller == null) {
-                            task = new Task<Void>() {
+                            new Thread(new Task<Void>() {
                                 @Override
                                 protected Void call() {
                                     Platform.runLater(() -> {
@@ -106,61 +129,16 @@ public class ClientReadSocketInput extends Thread {
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-                                        confirm[0] = controller.showAcceptFilePopup(filename, name, address);
-                                        if (confirm[0]) {
-                                            File saveFile = controller.saveFileLocation();
-                                            ClientReceiveFileServer server = new ClientReceiveFileServer(saveFile);
-                                            server.start();
-                                            try {
-                                                client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
-                                                        Protocol.inetAddressToBytes(address),
-                                                        Protocol.stringToBytes(client.getName()),
-                                                        Protocol.inetAddressToBytes(client.getAddress()),
-                                                        Protocol.inetAddressToBytes(server.getServerAddress())));
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        } else {
-                                            try {
-                                                client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
-                                                        Protocol.inetAddressToBytes(address)));
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
+                                        responseFileRequest(controller, filename, name, address);
                                     });
                                     return null;
                                 }
-                            };
-                            new Thread(task).start();
+                            }).start();
                         } else {
                             new Thread(new Task<Void>() {
                                 @Override
                                 protected Void call() throws Exception {
-                                    Platform.runLater(() -> {
-                                        confirm[0] = controller.showAcceptFilePopup(filename, name, address);
-                                        if (confirm[0]) {
-                                            File saveFile = controller.saveFileLocation();
-                                            ClientReceiveFileServer server = new ClientReceiveFileServer(saveFile);
-                                            server.start();
-                                            try {
-                                                client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
-                                                        Protocol.inetAddressToBytes(address),
-                                                        Protocol.stringToBytes(client.getName()),
-                                                        Protocol.inetAddressToBytes(client.getAddress()),
-                                                        Protocol.inetAddressToBytes(server.getServerAddress())));
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        } else {
-                                            try {
-                                                client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
-                                                        Protocol.inetAddressToBytes(address)));
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    });
+                                    Platform.runLater(() -> responseFileRequest(controller, filename, name, address));
                                     return null;
                                 }
                             }).start();

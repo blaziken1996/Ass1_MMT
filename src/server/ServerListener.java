@@ -19,13 +19,13 @@ import static java.util.Arrays.asList;
 
 public class ServerListener extends Thread {
 
-    private ClientSocket client;
-    private ConcurrentHashMap<InetSocketAddress, ClientSocket> clientAddressMap;
+    private ServerClient client;
+    private ConcurrentHashMap<InetSocketAddress, ServerClient> clientAddressMap;
     //private String clientAddress;
 
-    public ServerListener(ClientSocket socket, ConcurrentHashMap<InetSocketAddress, ClientSocket> addressmap) {
+    public ServerListener(ServerClient socket, ConcurrentHashMap<InetSocketAddress, ServerClient> addressMap) {
         client = socket;
-        clientAddressMap = addressmap;
+        clientAddressMap = addressMap;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ServerListener extends Thread {
             List<byte[]> packet = new ArrayList<>(clientAddressMap.size() * 2 + 2);
             packet.add(Protocol.intToBytes(Protocol.ONLINE_LIST_CODE));
             packet.add(Protocol.intToBytes(clientAddressMap.size()));
-            for (Map.Entry<InetSocketAddress, ClientSocket> e : clientAddressMap.entrySet()) {
+            for (Map.Entry<InetSocketAddress, ServerClient> e : clientAddressMap.entrySet()) {
                 packet.add(Protocol.inetAddressToBytes(e.getKey()));
                 packet.add(Protocol.stringToBytes(e.getValue().getName()));
             }

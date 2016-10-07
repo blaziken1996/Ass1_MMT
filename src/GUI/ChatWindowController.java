@@ -153,9 +153,10 @@ public class ChatWindowController implements Initializable {
         return alert.getResult() == ButtonType.YES;
     }
 
-    public File saveFileLocation() {
+    public File saveFileLocation(String filename) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose where to save file");
+        chooser.setInitialFileName(filename);
         File file = chooser.showSaveDialog(new Stage());
         return file;
     }
