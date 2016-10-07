@@ -125,7 +125,7 @@ public class ClientReadSocketInput extends Thread {
                                     Platform.runLater(() -> {
                                         ChatWindowController controller = null;
                                         try {
-                                            controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + "(" + address + ")", address);
+                                            controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + address, address);
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
