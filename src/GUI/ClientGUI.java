@@ -26,16 +26,10 @@ import static java.util.Arrays.asList;
 public class ClientGUI implements Initializable {
     @FXML
     private ListView<String> onlineList;
-
     @FXML
     private Label lbl;
-
     @FXML
-    private JFXButton btn;
-
-    @FXML
-    private JFXButton btnReset;
-
+    private JFXButton btnUpdate;
 
     private Client client;
     private ConcurrentHashMap<InetSocketAddress, ChatWindowController> chatWindows;
@@ -57,14 +51,11 @@ public class ClientGUI implements Initializable {
 
     @FXML
     private void handleButtonAction(ActionEvent actionEvent) {
-        if (actionEvent.getSource() == btnReset) {
-            onlineList.getItems().clear();
-        } else {
-            try {
-                client.write(asList(Protocol.intToBytes(Protocol.ONLINE_LIST_CODE)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        onlineList.getItems().clear();
+        try {
+            client.write(asList(Protocol.intToBytes(Protocol.ONLINE_LIST_CODE)));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -94,6 +85,7 @@ public class ClientGUI implements Initializable {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    onlineList.getSelectionModel().clearSelection();
                 });
 
                 return listCell;

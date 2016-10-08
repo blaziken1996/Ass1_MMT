@@ -3,40 +3,25 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-            minHeight="500.0" minWidth="350.0" prefHeight="500.0" prefWidth="350.0"
-            xmlns="http://javafx.com/javafx/8.0.60" fx:controller="GUI.LoginController">
+<AnchorPane fx:id="pane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="350.0" prefHeight="500.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.LoginController">
     <children>
-        <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="350.0"
-              prefHeight="500.0" prefWidth="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <children>
-                <JFXTextField fx:id="txtServerIP" labelFloat="true" layoutX="32.0" layoutY="244.0" maxWidth="183.0"
-                              minWidth="183.0" prefHeight="31.0" prefWidth="183.0" promptText="Server IP">
-                    <font>
-                        <Font size="15.0"/>
-                    </font>
-                </JFXTextField>
-                <JFXTextField fx:id="txtPort" labelFloat="true" layoutX="256.0" layoutY="244.0" maxWidth="67.0"
-                              minWidth="58.0" prefHeight="37.0" prefWidth="67.0" promptText="Port #">
-                    <font>
-                        <Font size="15.0"/>
-                    </font>
-                </JFXTextField>
-                <JFXTextField fx:id="txtChatID" labelFloat="true" layoutX="100.0" layoutY="345.0" maxWidth="162.0"
-                              minWidth="162.0" prefHeight="31.0" prefWidth="162.0" promptText="Chat ID">
-                    <font>
-                        <Font size="15.0"/>
-                    </font>
-                </JFXTextField>
-                <JFXButton fx:id="btnGo" alignment="CENTER" buttonType="RAISED" layoutX="142.0" layoutY="434.0"
-                           onAction="#handleButtonAction" prefHeight="26.0" prefWidth="78.0" ripplerFill="#95f0dc"
-                           text="GO"/>
-            </children>
-        </Pane>
+          <JFXTextField fx:id="txtServerIP" focusColor="#1976d2" focusTraversable="false" layoutX="40.0" layoutY="281.0" maxWidth="183.0" minWidth="183.0" prefHeight="31.0" prefWidth="183.0" promptText="Server IP">
+              <font>
+                  <Font size="15.0" />
+              </font>
+          </JFXTextField>
+          <JFXTextField fx:id="txtPort" focusColor="#1976d2" layoutX="255.0" layoutY="281.0" maxWidth="67.0" minWidth="58.0" prefHeight="37.0" prefWidth="67.0" promptText="Port">
+              <font>
+                  <Font size="15.0" />
+              </font>
+          </JFXTextField>
+          <JFXTextField fx:id="txtChatID" focusColor="#1976d2" layoutX="40.0" layoutY="345.0" maxWidth="282.0" minWidth="162.0" prefHeight="37.0" prefWidth="282.0" promptText="Chat ID">
+              <font>
+                  <Font size="15.0" />
+              </font>
+          </JFXTextField>
+          <JFXButton fx:id="btnGo" alignment="CENTER" buttonType="RAISED" defaultButton="true" layoutX="64.0" layoutY="423.0" onAction="#handleButtonAction" prefHeight="37.0" prefWidth="234.0" ripplerFill="#95f0dc" style="-fx-background-color: #2196F3;" text="LOG IN" textFill="WHITE" />
     </children>
 </AnchorPane>

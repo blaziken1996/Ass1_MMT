@@ -105,6 +105,7 @@ public class ChatWindowController implements Initializable {
             }
             txtEnter.clear();
         });
+        btnSend.setDefaultButton(true);
         chatScreen.setCellFactory(param -> new ListCell<String>() {
             {
                 Text text = new Text();
