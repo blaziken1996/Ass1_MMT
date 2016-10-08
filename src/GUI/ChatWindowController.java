@@ -12,12 +12,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -124,33 +126,32 @@ public class ChatWindowController implements Initializable {
     }
 
     public boolean showAcceptFilePopup(String fileName, String name, InetSocketAddress address) {
-//        JFXPopup popup = new JFXPopup();
-//        popup.setPrefSize(150, 300);
-//        HBox hBox = new HBox();
-//        JFXButton btnOK = new JFXButton();
-//        btnOK.setText("OK");
-//        JFXButton btnCancel =  new JFXButton();
-//        btnCancel.setText("Cancel");
-//        Text text = new Text("Do you want to accept file " + fileName + " from " + name + "(" + address +") ?");
-//        hBox.getChildren().add(btnOK);
-//        hBox.getChildren().add(btnCancel);
-//        VBox vbox = new VBox();
-//        AnchorPane pane = new AnchorPane();
-//        vbox.getChildren().addAll(text, hBox);
-//        pane.getChildren().addAll(vbox);
-//        popup.setPopupContainer(pane);
-//        final boolean[] result = new boolean[1];
-//        result[0] = false;
-//        btnOK.setOnAction(event -> {
-//            result[0] = true;
-//            popup.close();
-//        });
-//        btnCancel.setOnAction(event -> popup.close() );
-//        popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
-//        return  result[0];
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to accept file " + fileName + " from " + name + address + " ?", ButtonType.YES, ButtonType.NO);
-        alert.showAndWait();
-        return alert.getResult() == ButtonType.YES;
+        Stage dialog = new Stage();
+        HBox hBox = new HBox();
+        JFXButton btnOK = new JFXButton();
+        btnOK.setText("OK");
+        JFXButton btnCancel = new JFXButton();
+        btnCancel.setText("Cancel");
+        Text text = new Text("Do you want to accept file " + fileName + " from " + name + "(" + address + ") ?");
+        hBox.getChildren().add(btnOK);
+        hBox.getChildren().add(btnCancel);
+        VBox vbox = new VBox();
+        AnchorPane anchorPane = new AnchorPane();
+        vbox.getChildren().addAll(text, hBox);
+        text.setTextAlignment(TextAlignment.CENTER);
+        hBox.setAlignment(Pos.CENTER);
+        anchorPane.getChildren().addAll(vbox);
+        final boolean[] result = new boolean[1];
+        result[0] = false;
+        btnOK.setOnAction(event -> {
+            result[0] = true;
+            dialog.close();
+        });
+        btnCancel.setOnAction(event -> dialog.close());
+        dialog.setScene(new Scene(anchorPane));
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.showAndWait();
+        return result[0];
     }
 
     public File saveFileLocation(String filename) {

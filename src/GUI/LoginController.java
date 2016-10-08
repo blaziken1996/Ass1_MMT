@@ -37,8 +37,10 @@ public class LoginController {
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
-        String serverIP = txtServerIP.getText();
-        String portNumber = txtPort.getText();
+//        String serverIP = txtServerIP.getText();
+//        String portNumber = txtPort.getText();
+        String serverIP = "localhost";
+        String portNumber = "5000";
         Socket socket;
         int port;
         if (serverIP != null && portNumber != null) {
