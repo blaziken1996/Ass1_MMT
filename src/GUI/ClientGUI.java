@@ -5,7 +5,6 @@ package GUI;
 
 import client.Client;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListView;
 import common.Protocol;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,7 +25,7 @@ import static java.util.Arrays.asList;
 
 public class ClientGUI implements Initializable {
     @FXML
-    private JFXListView<String> onlineList;
+    private ListView<String> onlineList;
 
     @FXML
     private Label lbl;
@@ -42,7 +41,7 @@ public class ClientGUI implements Initializable {
     private ConcurrentHashMap<InetSocketAddress, ChatWindowController> chatWindows;
     private ConcurrentHashMap<InetSocketAddress, File> fileReceiver;
 
-    public JFXListView<String> getOnlineList() {
+    public ListView<String> getOnlineList() {
         return onlineList;
     }
 

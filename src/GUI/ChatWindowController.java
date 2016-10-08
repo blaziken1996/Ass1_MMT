@@ -2,7 +2,6 @@ package GUI;
 
 import client.Client;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextArea;
 import common.Protocol;
 import javafx.event.ActionEvent;
@@ -13,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -46,7 +46,7 @@ public class ChatWindowController implements Initializable {
     @FXML
     private JFXTextArea txtEnter;
     @FXML
-    private JFXListView<String> chatScreen;
+    private ListView<String> chatScreen;
     @FXML
     private JFXButton btnSendFile;
     private InetSocketAddress receiverAddress;
@@ -63,9 +63,7 @@ public class ChatWindowController implements Initializable {
         Stage stage = new Stage();
         stage.setTitle(title);
         stage.setScene(scene);
-        stage.setOnCloseRequest(event -> {
-            chatWindows.remove(address);
-        });
+        stage.setOnCloseRequest(event -> chatWindows.remove(address));
         stage.show();
         return chatWindowController;
     }
@@ -121,7 +119,7 @@ public class ChatWindowController implements Initializable {
         });
     }
 
-    public JFXListView<String> getChatScreen() {
+    public ListView<String> getChatScreen() {
         return chatScreen;
     }
 

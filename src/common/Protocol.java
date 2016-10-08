@@ -21,18 +21,6 @@ Protocol {
     public final static int ONLINE_LIST_CODE = 5;
     public final static int BUFFER_SIZE = 64 * 1024 * 8;
     public final static String ENCODE = "UTF-8";
-    public final static String SEND_FILE = "SENDFILE";
-    public final static String send_file = SEND_FILE.toLowerCase();
-    public final static String SEND_MSG = "SENDMSG";
-    public final static String send_msg = SEND_MSG.toLowerCase();
-    public final static String ONLINELIST = "WHOISONLINE";
-    public final static String onlinelist = ONLINELIST.toLowerCase();
-    public final static String QUIT = "QUIT";
-    public final static String quit = QUIT.toLowerCase();
-    private final static String REGEX = "([^#\\\\]|\\\\[#\\\\])+";
-    private final static String FilePathRegex = "([^\\\\/]+)";
-    private final static Pattern p = Pattern.compile(REGEX);
-    private final static Pattern path = Pattern.compile(FilePathRegex);
 
     public static byte[] intToBytes(int x) {
         byte[] bytes = new byte[Integer.BYTES];
@@ -77,22 +65,5 @@ Protocol {
         //for (int i = 0; i < len; i++) bytes[i] = (byte) in.read();
         in.read(bytes, 0, len);
         return new String(bytes, Protocol.ENCODE);
-    }
-
-    public static String[] messageSeparator(String message) {
-        Matcher m = p.matcher(message);
-        String[] list = new String[3];
-        int count = 0;
-        while (m.find() && count < 3) {
-            list[count++] = m.group(0);
-        }
-        return list;
-    }
-
-    public static String getFileName(String filepath) {
-        Matcher m = path.matcher(filepath);
-        String result = null;
-        while (m.find()) result = m.group(0);
-        return result;
     }
 }
