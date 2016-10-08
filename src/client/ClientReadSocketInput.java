@@ -162,6 +162,10 @@ public class ClientReadSocketInput extends Thread {
                         chatWindows.get(address).showMessage(name + address + " has denied your request.");
                         client.getReceiverFileMap().remove(address);
                         break;
+                    case Protocol.NOT_AVAIL:
+                        chatWindows.get(address = Protocol.readInetAddress(in)).showMessage("This person is offline.");
+                        client.getReceiverFileMap().remove(address);
+                        break;
                     case Protocol.END_CONNECT_CODE:
                         isRunning = false;
                         break;

@@ -17,9 +17,10 @@ Protocol {
     public final static int ACCEPT_FILE = 3;
     public final static int DENY_FILE = 4;
     public final static int FILE_REQ_CODE = 2;
-    public final static int END_CONNECT_CODE = 6;
+    public final static int END_CONNECT_CODE = 7;
     public final static int ONLINE_LIST_CODE = 5;
     public final static int BUFFER_SIZE = 64 * 1024 * 8;
+    public final static int NOT_AVAIL = 6;
     public final static String ENCODE = "UTF-8";
 
     public static byte[] intToBytes(int x) {
