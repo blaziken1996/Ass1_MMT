@@ -78,13 +78,11 @@ public class ChatWindowController implements Initializable {
     }
 
     @FXML
-    private void locateFile(ActionEvent event) {
+    private void chooseFile(ActionEvent event) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose file to send");
         File file = chooser.showOpenDialog(new Stage());
         if (file != null) {
-            System.out.println(receiverAddress);
-            System.out.println(file);
             fileReceiver.put(receiverAddress, file);
             try {
                 client.write(asList(Protocol.intToBytes(Protocol.FILE_REQ_CODE), Protocol.inetAddressToBytes(receiverAddress),
@@ -130,7 +128,7 @@ public class ChatWindowController implements Initializable {
         btnOK.setText("OK");
         JFXButton btnCancel = new JFXButton();
         btnCancel.setText("Cancel");
-        Text text = new Text("Do you want to accept file " + fileName + " from " + name + "(" + address + ") ?");
+        Text text = new Text("Do you want to accept file " + fileName + " from " + name + address + " ?");
         hBox.getChildren().add(btnOK);
         hBox.getChildren().add(btnCancel);
         VBox vbox = new VBox();
@@ -139,12 +137,12 @@ public class ChatWindowController implements Initializable {
         text.setTextAlignment(TextAlignment.CENTER);
         hBox.setAlignment(Pos.CENTER);
         anchorPane.getChildren().addAll(vbox);
-        final boolean[] result = new boolean[1];
-        result[0] = false;
+        boolean[] result = {false};
         btnOK.setOnAction(event -> {
             result[0] = true;
             dialog.close();
         });
+
         btnCancel.setOnAction(event -> dialog.close());
         dialog.setScene(new Scene(anchorPane));
         dialog.initModality(Modality.APPLICATION_MODAL);

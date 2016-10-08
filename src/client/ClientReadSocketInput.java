@@ -32,28 +32,25 @@ public class ClientReadSocketInput extends Thread {
         this.client = client;
     }
 
-    private void responseFileRequest(ChatWindowController controller, String filename, String name, InetSocketAddress address) {
+    private void responseFileRequest(ChatWindowController controller, String filename, String name, InetSocketAddress address) throws IOException {
         boolean confirm = controller.showAcceptFilePopup(filename, name, address);
         if (confirm) {
             File saveFile = controller.saveFileLocation(filename);
-            ClientReceiveFileServer server = new ClientReceiveFileServer(saveFile);
-            server.start();
-            try {
+            if (saveFile != null) {
+                ClientReceiveFileServer server = new ClientReceiveFileServer(saveFile);
+                server.start();
+
                 client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
                         Protocol.inetAddressToBytes(address),
                         Protocol.stringToBytes(client.getName()),
                         Protocol.inetAddressToBytes(client.getAddress()),
                         Protocol.inetAddressToBytes(server.getServerAddress())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            } else client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
+                    Protocol.inetAddressToBytes(address)));
         } else {
-            try {
                 client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
                         Protocol.inetAddressToBytes(address)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -126,10 +123,10 @@ public class ClientReadSocketInput extends Thread {
                                         ChatWindowController controller = null;
                                         try {
                                             controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + address, address);
+                                            responseFileRequest(controller, filename, name, address);
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-                                        responseFileRequest(controller, filename, name, address);
                                     });
                                     return null;
                                 }
@@ -137,8 +134,14 @@ public class ClientReadSocketInput extends Thread {
                         } else {
                             new Thread(new Task<Void>() {
                                 @Override
-                                protected Void call() throws Exception {
-                                    Platform.runLater(() -> responseFileRequest(controller, filename, name, address));
+                                protected Void call() {
+                                    Platform.runLater(() -> {
+                                        try {
+                                            responseFileRequest(controller, filename, name, address);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
                                     return null;
                                 }
                             }).start();

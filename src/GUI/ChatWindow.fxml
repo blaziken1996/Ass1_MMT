@@ -4,12 +4,10 @@
 <?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-
-<AnchorPane fx:id="pane" maxHeight="Infinity" maxWidth="Infinity" minHeight="300" minWidth="500" prefHeight="300" prefWidth="500" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.ChatWindowController">
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" maxHeight="Infinity" maxWidth="Infinity" minHeight="300"
+            minWidth="500" prefHeight="300" prefWidth="500" xmlns="http://javafx.com/javafx/8.0.102-ea"
+            fx:controller="GUI.ChatWindowController">
     <children>
         <GridPane prefHeight="318.0" prefWidth="466.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columnConstraints>
@@ -27,8 +25,12 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin></JFXTextArea>
                 <JFXButton fx:id="btnSend" buttonType="RAISED" prefHeight="39.0" prefWidth="56.0" ripplerFill="#e12b2b" text="Send" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                <JFXListView fx:id="chatScreen" cellVerticalMargin="0.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="112.0" prefWidth="443.0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                <JFXButton fx:id="btnSendFile" buttonType="RAISED" onAction="#locateFile" text="Send File" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                <JFXListView fx:id="chatScreen" cellVerticalMargin="0.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                             prefHeight="112.0" prefWidth="488.0" GridPane.columnSpan="3" GridPane.halignment="CENTER"
+                             GridPane.valignment="CENTER"/>
+                <JFXButton fx:id="btnSendFile" buttonType="RAISED" onAction="#chooseFile" text="Send File"
+                           GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1"
+                           GridPane.valignment="CENTER"/>
             </children>
         </GridPane>
     </children>
