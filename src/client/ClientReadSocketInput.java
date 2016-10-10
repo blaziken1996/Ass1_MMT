@@ -37,14 +37,14 @@ public class ClientReadSocketInput extends Thread {
         if (confirm) {
             File saveFile = controller.saveFileLocation(filename);
             if (saveFile != null) {
-                ClientReceiveFileServer server = new ClientReceiveFileServer(saveFile);
-                server.start();
+                ClientReceiveFile receiveFile = new ClientReceiveFile(saveFile, client.getHost(), client.getPort());
+                receiveFile.start();
 
                 client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
                         Protocol.inetAddressToBytes(address),
                         Protocol.stringToBytes(client.getName()),
                         Protocol.inetAddressToBytes(client.getAddress()),
-                        Protocol.inetAddressToBytes(server.getServerAddress())));
+                        Protocol.inetAddressToBytes(receiveFile.getSocketAddress())));
 
             } else client.write(asList(Protocol.intToBytes(Protocol.DENY_FILE),
                     Protocol.inetAddressToBytes(address)));
@@ -150,10 +150,10 @@ public class ClientReadSocketInput extends Thread {
                     case Protocol.ACCEPT_FILE:
                         name = Protocol.readString(in);
                         address = Protocol.readInetAddress(in);
-                        InetSocketAddress host = Protocol.readInetAddress(in);
+                        InetSocketAddress receiveAddress = Protocol.readInetAddress(in);
                         System.out.println("From readsocket: " + client.getReceiverFileMap().get(address) + " " + address);
                         chatWindows.get(address).showMessage(name + address + " has accepted your request. Sending file...");
-                        new ClientSendFile(host.getAddress(), host.getPort(), client.getReceiverFileMap().get(address)).start();
+                        new ClientSendFile(client.getHost(), client.getPort(), client.getReceiverFileMap().get(address), receiveAddress).start();
                         client.getReceiverFileMap().remove(address);
                         break;
                     case Protocol.DENY_FILE:

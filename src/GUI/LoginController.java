@@ -19,7 +19,6 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.Socket;
 
 import static java.util.Arrays.asList;
 
@@ -41,14 +40,12 @@ public class LoginController {
         String portNumber = txtPort.getText();
         //String serverIP = "localhost";
         //String portNumber = "5000";
-        Socket socket;
         int port;
         if (serverIP != null && portNumber != null) {
             try {
                 port = Integer.parseInt(portNumber);
-                socket = new Socket(serverIP, port);
-                client = new Client(socket, txtChatID.getText());
-                client.write(asList(Protocol.stringToBytes(client.getName())));
+                client = new Client(serverIP, port, txtChatID.getText());
+                client.write(asList(Protocol.intToBytes(Protocol.CHAT_SOCKET), Protocol.stringToBytes(client.getName())));
             } catch (NumberFormatException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Invalid Port Number");

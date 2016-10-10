@@ -21,7 +21,6 @@ public class SendFile {
                 outputStream.write(buffer, 0, count);
             }
             outputStream.flush();
-            bufferedInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

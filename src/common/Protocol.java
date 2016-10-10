@@ -3,24 +3,25 @@ package common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.net.*;
+import java.util.Enumeration;
 
 /**
  * Created by trung on 16/09/2016.
  */
-public class
-Protocol {
+public class Protocol {
     public final static int SEND_MSG_CODE = 1;
     public final static int ACCEPT_FILE = 3;
     public final static int DENY_FILE = 4;
     public final static int FILE_REQ_CODE = 2;
     public final static int END_CONNECT_CODE = 7;
     public final static int ONLINE_LIST_CODE = 5;
-    public final static int BUFFER_SIZE = 64 * 1024 * 8;
+    public final static int BUFFER_SIZE = 8 * 64 * 1024;
     public final static int NOT_AVAIL = 6;
+    public final static int CHAT_SOCKET = 8;
+    public final static int RECEIVE_FILE_SOCKET = 9;
+    public final static int SEND_FILE_SOCKET = 10;
+    public final static int RECEIVE_FILE_FINISH = 11;
     public final static String ENCODE = "UTF-8";
 
     public static byte[] intToBytes(int x) {
@@ -50,6 +51,25 @@ Protocol {
         System.arraycopy(len, 0, result, 0, len.length);
         System.arraycopy(sbytes, 0, result, len.length, sbytes.length);
         return result;
+    }
+
+    public static InetAddress readHostInetAddress() {
+        try {
+            Enumeration<NetworkInterface> interfaceEnumeration = NetworkInterface.getNetworkInterfaces();
+            while (interfaceEnumeration.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaceEnumeration.nextElement();
+                Enumeration<InetAddress> addressEnumeration = networkInterface.getInetAddresses();
+                while (addressEnumeration.hasMoreElements()) {
+                    InetAddress address = addressEnumeration.nextElement();
+                    if (!address.isLinkLocalAddress() && !address.isLoopbackAddress()
+                            && address instanceof Inet4Address)
+                        return address;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public static int readInt(InputStream in) throws IOException {
         byte[] bytes = new byte[Integer.BYTES];

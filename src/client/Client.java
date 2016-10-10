@@ -15,9 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Client extends ClientSocket {
     private ConcurrentHashMap<InetSocketAddress, File> receiverFileMap;
     private ClientGUI clientGUI;
+    private String host;
+    private int port;
 
-    public Client(Socket socket, String name) throws IOException {
-        super(socket, name);
+    public Client(String host, int port, String name) throws IOException {
+        super(new Socket(host, port), name);
+        this.host = host;
+        this.port = port;
         address = (InetSocketAddress) socket.getLocalSocketAddress();
         receiverFileMap = new ConcurrentHashMap<>();
     }
@@ -32,5 +36,13 @@ public class Client extends ClientSocket {
 
     public ConcurrentHashMap<InetSocketAddress, File> getReceiverFileMap() {
         return receiverFileMap;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

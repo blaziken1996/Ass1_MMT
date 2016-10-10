@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
@@ -13,7 +12,7 @@ import java.util.List;
  */
 public abstract class ClientSocket {
     protected InetSocketAddress address;
-    private Socket socket;
+    protected Socket socket;
     private InputStream inputStream;
     private OutputStream outputStream;
     private String name;
@@ -38,6 +37,10 @@ public abstract class ClientSocket {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Socket getSocket() {
         return socket;
     }
@@ -56,5 +59,9 @@ public abstract class ClientSocket {
             len += b.length;
         }
         outputStream.write(p,0,len);
+    }
+
+    public OutputStream getOutputStream() {
+        return outputStream;
     }
 }

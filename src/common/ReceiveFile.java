@@ -16,11 +16,12 @@ public class ReceiveFile {
             bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
             byte[] buffer = new byte[Protocol.BUFFER_SIZE];
             int count;
-            while ((count = inputStream.read(buffer)) > 0) {
+            int fileSize = Protocol.readInt(inputStream);
+            while (fileSize > 0 && (count = inputStream.read(buffer)) > 0) {
                 bufferedOutputStream.write(buffer, 0, count);
+                fileSize -= count;
             }
             bufferedOutputStream.flush();
-            bufferedOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
