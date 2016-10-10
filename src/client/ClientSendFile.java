@@ -1,10 +1,11 @@
 package client;
 
+import common.Protocol;
 import common.SendFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -14,9 +15,12 @@ public class ClientSendFile extends Thread {
     private Socket client;
     private File file;
 
-    public ClientSendFile(InetAddress host, int port, File file) {
+    public ClientSendFile(String host, int port, File file, InetSocketAddress address) {
         try {
             client = new Socket(host, port);
+            client.getOutputStream().write(Protocol.intToBytes(Protocol.SEND_FILE_SOCKET));
+            client.getOutputStream().write(Protocol.inetAddressToBytes(address));
+            client.getOutputStream().write(Protocol.intToBytes((int) file.length()));
             this.file = file;
         } catch (IOException e) {
             e.printStackTrace();

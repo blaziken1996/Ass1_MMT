@@ -10,10 +10,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import common.Protocol;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -23,8 +20,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -49,10 +44,10 @@ public class LoginController implements Initializable {
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
-//        String serverIP = txtServerIP.getText();
-//        String portNumber = txtPort.getText();
-        String serverIP = "localhost";
-        String portNumber = "5000";
+        String serverIP = txtServerIP.getText();
+        String portNumber = txtPort.getText();
+//        String serverIP = "localhost";
+//        String portNumber = "5000";
         Socket socket;
         int port;
         if (serverIP != null && portNumber != null) {
@@ -79,7 +74,6 @@ public class LoginController implements Initializable {
         Client.getStylesheets().add(getClass().getResource("listview.css").toExternalForm());
         stage.setScene(Client);
         clientGUIController.setClient(client);
-        clientGUIController.getOnlineListFirstTime();
         client.setClientGUI(clientGUIController);
         new ClientReadSocketInput(client, clientGUIController).start();
         stage.setOnCloseRequest(e -> {

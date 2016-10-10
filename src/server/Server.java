@@ -3,8 +3,9 @@ package server;
 import common.Protocol;
 
 import java.io.IOException;
-import java.net.*;
-import java.util.Enumeration;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -14,11 +15,12 @@ public class Server {
     private ServerSocket serverSocket;
     private InetAddress inetAddress;
     private ConcurrentHashMap<InetSocketAddress, ServerClient> clientMap;
-
+    private ConcurrentHashMap<InetSocketAddress, ServerClient> sendFileMap;
     public Server(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         clientMap = new ConcurrentHashMap<>();
-        inetAddress = readHostInetAddress();
+        sendFileMap = new ConcurrentHashMap<>();
+        inetAddress = Protocol.readHostInetAddress();
     }
 
     public static void main(String[] args) {
@@ -30,10 +32,8 @@ public class Server {
         try {
             Server server = new Server(port);
             System.out.println("Server socket opens at " + server.getInetAddress() + " port " + port);
-            Socket s;
-            while (true) new ServerListener(new ServerClient(s = server.serverSocket.accept()
-                    , Protocol.readString(s.getInputStream())) {
-            }, server.clientMap).start();
+            while (true)
+                new ServerListener(new ServerClient(server.serverSocket.accept()), server.clientMap, server.sendFileMap).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,22 +43,5 @@ public class Server {
         return inetAddress;
     }
 
-    private InetAddress readHostInetAddress() {
-        try {
-            Enumeration<NetworkInterface> interfaceEnumeration = NetworkInterface.getNetworkInterfaces();
-            while (interfaceEnumeration.hasMoreElements()) {
-                NetworkInterface networkInterface = interfaceEnumeration.nextElement();
-                Enumeration<InetAddress> addressEnumeration = networkInterface.getInetAddresses();
-                while (addressEnumeration.hasMoreElements()) {
-                    InetAddress address = addressEnumeration.nextElement();
-                    if (!address.isLinkLocalAddress() && !address.isLoopbackAddress()
-                            && address instanceof Inet4Address)
-                        return address;
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 }
