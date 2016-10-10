@@ -4,7 +4,10 @@ import client.Client;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 import common.Protocol;
+import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -13,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -61,6 +65,8 @@ public class ChatWindowController implements Initializable {
         chatWindowController.setPaneBinding(scene);
         chatWindows.put(address, chatWindowController);
         Stage stage = new Stage();
+        stage.setMinWidth(495);
+        stage.setMinHeight(330);
         stage.setTitle(title);
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> chatWindows.remove(address));
@@ -95,6 +101,13 @@ public class ChatWindowController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        txtEnter.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                Event parentEvent = event.copyFor(pane, pane);
+                pane.fireEvent(parentEvent);
+                event.consume();
+            }
+        });
         btnSend.setOnAction(event -> {
             try {
                 chatScreen.getItems().add("Me: " + txtEnter.getText());
@@ -105,6 +118,9 @@ public class ChatWindowController implements Initializable {
             }
             txtEnter.clear();
         });
+        btnSend.setDefaultButton(true);
+        pane.getStylesheets().add(getClass().getResource("btnFile.css").toExternalForm());
+        pane.getStylesheets().add(getClass().getResource("listview.css").toExternalForm());
         chatScreen.setCellFactory(param -> new ListCell<String>() {
             {
                 Text text = new Text();
@@ -113,6 +129,12 @@ public class ChatWindowController implements Initializable {
                 setPrefWidth(0);
                 setGraphic(text);
                 setAlignment(Pos.CENTER_LEFT);
+            }
+        });
+        chatScreen.getItems().addListener(new ListChangeListener<String>() {
+            @Override
+            public void onChanged(Change<? extends String> c) {
+                Platform.runLater(() -> chatScreen.scrollTo(chatScreen.getItems().size()-1));
             }
         });
     }

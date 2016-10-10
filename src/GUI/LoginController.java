@@ -9,20 +9,26 @@ import client.ClientReadSocketInput;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import common.Protocol;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import static java.util.Arrays.asList;
 
-public class LoginController {
+public class LoginController implements Initializable {
 
     Client client = null;
     @FXML
@@ -33,6 +39,8 @@ public class LoginController {
     private JFXTextField txtChatID;
     @FXML
     private JFXButton btnGo;
+    @FXML
+    private AnchorPane pane;
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
@@ -61,6 +69,7 @@ public class LoginController {
         Scene Client = new Scene(par);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setTitle("Client");
+        Client.getStylesheets().add(getClass().getResource("listview.css").toExternalForm());
         stage.setScene(Client);
         clientGUIController.setClient(client);
         client.setClientGUI(clientGUIController);
@@ -73,5 +82,10 @@ public class LoginController {
             }
         });
         stage.show();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Platform.runLater(() -> pane.requestFocus());
     }
 }
