@@ -153,6 +153,7 @@ public class ClientReadSocketInput extends Thread {
                         InetSocketAddress host = Protocol.readInetAddress(in);
                         System.out.println("From readsocket: " + client.getReceiverFileMap().get(address) + " " + address);
                         chatWindows.get(address).showMessage(name + address + " has accepted your request. Sending file...");
+                        System.out.println("host address: " + host.getAddress());
                         new ClientSendFile(host.getAddress(), host.getPort(), client.getReceiverFileMap().get(address)).start();
                         client.getReceiverFileMap().remove(address);
                         break;

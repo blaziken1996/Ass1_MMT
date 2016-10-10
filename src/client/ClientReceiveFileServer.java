@@ -4,9 +4,8 @@ import common.ReceiveFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.Enumeration;
 
 /**
  * Created by trung on 22/09/2016.
@@ -20,12 +19,30 @@ public class ClientReceiveFileServer extends Thread {
         try {
             this.saveFile = filePath;
             server = new ServerSocket(0);
-            serverAddress = (InetSocketAddress) server.getLocalSocketAddress();
+            serverAddress = new InetSocketAddress(readHostInetAddress(),server.getLocalPort());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
+    private InetAddress readHostInetAddress() {
+        try {
+            Enumeration<NetworkInterface> interfaceEnumeration = NetworkInterface.getNetworkInterfaces();
+            while (interfaceEnumeration.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaceEnumeration.nextElement();
+                Enumeration<InetAddress> addressEnumeration = networkInterface.getInetAddresses();
+                while (addressEnumeration.hasMoreElements()) {
+                    InetAddress address = addressEnumeration.nextElement();
+                    if (!address.isLinkLocalAddress() && !address.isLoopbackAddress()
+                            && address instanceof Inet4Address)
+                        return address;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public InetSocketAddress getServerAddress() {
         return serverAddress;
     }

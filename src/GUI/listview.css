@@ -2,7 +2,7 @@
     -fx-opacity: 0;
 }
 
-.list-cell:filled:hover {
+#onlineList .list-cell:filled:hover {
     -fx-background-color: #2196F3;
     -fx-text-fill: white;
 }
