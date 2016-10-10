@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
@@ -46,7 +47,14 @@ public abstract class ClientSocket {
     }
 
     public synchronized void write(List<byte[]> packet) throws IOException {
-
-        for (byte[] b : packet) outputStream.write(b);
+        int len = 0;
+        for (byte[] b: packet) len += b.length;
+        byte[] p = new byte[len];
+        len = 0;
+        for (byte[] b : packet) {
+            System.arraycopy(b,0,p,len,b.length);
+            len += b.length;
+        }
+        outputStream.write(p,0,len);
     }
 }
