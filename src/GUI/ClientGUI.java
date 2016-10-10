@@ -12,6 +12,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
 import java.io.File;
@@ -34,6 +36,7 @@ public class ClientGUI implements Initializable {
     private Client client;
     private ConcurrentHashMap<InetSocketAddress, ChatWindowController> chatWindows;
     private ConcurrentHashMap<InetSocketAddress, File> fileReceiver;
+    private Image onlineIcon;
 
     public ListView<String> getOnlineList() {
         return onlineList;
@@ -50,7 +53,7 @@ public class ClientGUI implements Initializable {
     }
 
     @FXML
-    private void handleButtonAction(ActionEvent actionEvent) {
+    private void getOnlineList(ActionEvent actionEvent) {
         onlineList.getItems().clear();
         try {
             client.write(asList(Protocol.intToBytes(Protocol.ONLINE_LIST_CODE)));
@@ -66,6 +69,7 @@ public class ClientGUI implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ChatWindowController.chatWindows = chatWindows = new ConcurrentHashMap<>();
+        onlineIcon = new Image(getClass().getResourceAsStream("online.png"));
         onlineList.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> param) {
@@ -73,7 +77,13 @@ public class ClientGUI implements Initializable {
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
-                        setText(item);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            setGraphic(new ImageView(onlineIcon));
+                            setText(item);
+                        }
                     }
                 };
                 listCell.setOnMouseClicked(event -> {
@@ -91,6 +101,14 @@ public class ClientGUI implements Initializable {
                 return listCell;
             }
         });
+    }
+
+    public void getOnlineListFirstTime() {
+        try {
+            client.write(asList(Protocol.intToBytes(Protocol.ONLINE_LIST_CODE)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public ConcurrentHashMap<InetSocketAddress, File> getFileReceiver() {
