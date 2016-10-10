@@ -54,7 +54,8 @@ public class LoginController implements Initializable {
             try {
                 port = Integer.parseInt(portNumber);
                 socket = new Socket(serverIP, port);
-
+                client = new Client(socket, txtChatID.getText());
+                System.out.print("as");
                 client.write(asList(Protocol.stringToBytes(client.getName())));
             } catch (NumberFormatException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
