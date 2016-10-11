@@ -1,11 +1,8 @@
 package server;
 
-import common.Protocol;
-
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
+import java.net.*;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -20,7 +17,7 @@ public class Server {
         serverSocket = new ServerSocket(port);
         clientMap = new ConcurrentHashMap<>();
         sendFileMap = new ConcurrentHashMap<>();
-        inetAddress = Protocol.readHostInetAddress();
+        inetAddress = readHostInetAddress();
     }
 
     public static void main(String[] args) {
@@ -37,6 +34,25 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static InetAddress readHostInetAddress() {
+        try {
+            Enumeration<NetworkInterface> interfaceEnumeration = NetworkInterface.getNetworkInterfaces();
+            while (interfaceEnumeration.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaceEnumeration.nextElement();
+                Enumeration<InetAddress> addressEnumeration = networkInterface.getInetAddresses();
+                while (addressEnumeration.hasMoreElements()) {
+                    InetAddress address = addressEnumeration.nextElement();
+                    if (!address.isLinkLocalAddress() && !address.isLoopbackAddress()
+                            && address instanceof Inet4Address)
+                        return address;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public InetAddress getInetAddress() {
