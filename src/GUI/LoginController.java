@@ -44,19 +44,17 @@ public class LoginController implements Initializable {
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
-        String serverIP = txtServerIP.getText();
-        String portNumber = txtPort.getText();
-//        String serverIP = "localhost";
-//        String portNumber = "5000";
+//        String serverIP = txtServerIP.getText();
+//        String portNumber = txtPort.getText();
+        String serverIP = "localhost";
+        String portNumber = "5000";
         Socket socket;
         int port;
         if (serverIP != null && portNumber != null) {
             try {
                 port = Integer.parseInt(portNumber);
-                socket = new Socket(serverIP, port);
-                client = new Client(socket, txtChatID.getText());
-                System.out.print("as");
-                client.write(asList(Protocol.stringToBytes(client.getName())));
+                client = new Client(serverIP, port, txtChatID.getText());
+                client.write(asList(Protocol.intToBytes(Protocol.CHAT_SOCKET), Protocol.stringToBytes(client.getName())));
             } catch (NumberFormatException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Invalid Port Number");
@@ -66,16 +64,17 @@ public class LoginController implements Initializable {
             }
         }
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ClientGUI.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/ClientGUI.fxml"));
         Parent par = fxmlLoader.load();
         ClientGUI clientGUIController = fxmlLoader.getController();
         Scene Client = new Scene(par);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setTitle("Client");
-        Client.getStylesheets().add(getClass().getResource("listview.css").toExternalForm());
+        Client.getStylesheets().add(getClass().getResource("css/listview.css").toExternalForm());
         stage.setScene(Client);
         clientGUIController.setClient(client);
         client.setClientGUI(clientGUIController);
+        clientGUIController.getOnlineListFirstTime();
         new ClientReadSocketInput(client, clientGUIController).start();
         stage.setOnCloseRequest(e -> {
             try {

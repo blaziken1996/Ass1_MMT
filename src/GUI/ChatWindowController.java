@@ -11,9 +11,11 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
@@ -25,6 +27,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,14 +53,14 @@ public class ChatWindowController implements Initializable {
     @FXML
     private JFXTextArea txtEnter;
     @FXML
-    private ListView<String> chatScreen;
+    private ListView<ChatMessage> chatScreen;
     @FXML
     private JFXButton btnSendFile;
     private InetSocketAddress receiverAddress;
 
 
     public static ChatWindowController ChatWindowsCreate(String title, InetSocketAddress address) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(ChatWindowController.class.getResource("ChatWindow.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ChatWindowController.class.getResource("fxml/ChatWindow.fxml"));
         Parent par = fxmlLoader.load();
         Scene scene = new Scene(par);
         ChatWindowController chatWindowController = fxmlLoader.getController();
@@ -110,7 +113,7 @@ public class ChatWindowController implements Initializable {
         });
         btnSend.setOnAction(event -> {
             try {
-                chatScreen.getItems().add("Me: " + txtEnter.getText());
+                chatScreen.getItems().add(new ChatMessage("Me: " + txtEnter.getText(), true));
                 client.write(asList(Protocol.intToBytes(Protocol.SEND_MSG_CODE),
                         Protocol.inetAddressToBytes(receiverAddress), Protocol.stringToBytes(txtEnter.getText())));
             } catch (IOException e) {
@@ -119,27 +122,52 @@ public class ChatWindowController implements Initializable {
             txtEnter.clear();
         });
         btnSend.setDefaultButton(true);
-        pane.getStylesheets().add(getClass().getResource("btnFile.css").toExternalForm());
-        pane.getStylesheets().add(getClass().getResource("listview.css").toExternalForm());
-        chatScreen.setCellFactory(param -> new ListCell<String>() {
-            {
-                Text text = new Text();
-                text.wrappingWidthProperty().bind(param.widthProperty().subtract(30));
-                text.textProperty().bind(itemProperty());
-                setPrefWidth(0);
-                setGraphic(text);
-                setAlignment(Pos.CENTER_LEFT);
+        pane.getStylesheets().add(getClass().getResource("css/btnFile.css").toExternalForm());
+        pane.getStylesheets().add(getClass().getResource("css/listview.css").toExternalForm());
+        chatScreen.setCellFactory(new Callback<ListView<ChatMessage>, ListCell<ChatMessage>>() {
+            @Override
+            public ListCell<ChatMessage> call(ListView<ChatMessage> param) {
+                ListCell<ChatMessage> cell = new ListCell<ChatMessage>() {
+                    @Override
+                    protected void updateItem(ChatMessage item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            Label label = new Label();
+                            label.setText(item.getText());
+                            label.setWrapText(true);
+                            label.setPadding(new Insets(10));
+                            setPrefWidth(0);
+                            setGraphic(label);
+                            if (item.isSelf()){
+                                label.setTextAlignment(TextAlignment.RIGHT);
+                                label.setAlignment(Pos.CENTER_RIGHT);
+                                setAlignment(Pos.CENTER_RIGHT);
+                            }
+                            else
+                                setAlignment(Pos.CENTER_LEFT);
+                        }
+                        else setText("");
+                    }
+                };
+                return cell;
             }
         });
-        chatScreen.getItems().addListener(new ListChangeListener<String>() {
+//                Text text = new Text();
+//                text.wrappingWidthProperty().bind(param.widthProperty().subtract(30));
+//                text.textProperty().bind( itemProperty());
+//                setPrefWidth(0);
+//                setGraphic(text);
+//                setAlignment(Pos.CENTER_LEFT);
+
+        chatScreen.getItems().addListener(new ListChangeListener<ChatMessage>() {
             @Override
-            public void onChanged(Change<? extends String> c) {
+            public void onChanged(Change<? extends ChatMessage> c) {
                 Platform.runLater(() -> chatScreen.scrollTo(chatScreen.getItems().size()-1));
             }
         });
     }
 
-    public ListView<String> getChatScreen() {
+    public ListView<ChatMessage> getChatScreen() {
         return chatScreen;
     }
 
@@ -181,7 +209,7 @@ public class ChatWindowController implements Initializable {
     }
 
     public void showMessage(String message) {
-        chatScreen.getItems().add(message);
+        Platform.runLater(() -> chatScreen.getItems().add(new ChatMessage(message)));
     }
 
 }

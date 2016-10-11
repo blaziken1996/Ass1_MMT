@@ -1,9 +1,0 @@
-#sendBtn {
-    -fx-graphic: url("send.png");
-    -fx-focus-color: transparent;
-    -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-body-color;
-
-}
-.jfx-button {
-    -fx-graphic: url("file.png");
-}
