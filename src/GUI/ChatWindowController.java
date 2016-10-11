@@ -56,22 +56,29 @@ public class ChatWindowController implements Initializable {
     private ListView<ChatMessage> chatScreen;
     @FXML
     private JFXButton btnSendFile;
+    @FXML
+    private Label lblName;
+    @FXML
+    private Label lblAddress;
+
     private InetSocketAddress receiverAddress;
 
 
-    public static ChatWindowController ChatWindowsCreate(String title, InetSocketAddress address) throws IOException {
+    public static ChatWindowController ChatWindowsCreate(String name, InetSocketAddress address) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ChatWindowController.class.getResource("fxml/ChatWindow.fxml"));
         Parent par = fxmlLoader.load();
         Scene scene = new Scene(par);
         ChatWindowController chatWindowController = fxmlLoader.getController();
         chatWindowController.setReceiverAddress(address);
-        chatWindowController.setPaneBinding(scene);
+        chatWindowController.setLblNameAndAddress(name, address.toString());
+        //chatWindowController.setPaneBinding(scene);
         chatWindows.put(address, chatWindowController);
         Stage stage = new Stage();
-        stage.setMinWidth(495);
+        stage.setMinWidth(500);
         stage.setMinHeight(330);
-        stage.setTitle(title);
+        stage.setTitle("Chat with " + name + " (" + address.toString().substring(1) +")");
         stage.setScene(scene);
+
         stage.setOnCloseRequest(event -> chatWindows.remove(address));
         stage.show();
         return chatWindowController;
@@ -142,9 +149,13 @@ public class ChatWindowController implements Initializable {
                                 label.setTextAlignment(TextAlignment.RIGHT);
                                 label.setAlignment(Pos.CENTER_RIGHT);
                                 setAlignment(Pos.CENTER_RIGHT);
+                                label.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white");
                             }
-                            else
+                            else {
                                 setAlignment(Pos.CENTER_LEFT);
+                                label.setStyle("-fx-background-color: #BBDEFB");
+                            }
+
                         }
                         else setText("");
                     }
@@ -175,17 +186,32 @@ public class ChatWindowController implements Initializable {
         Stage dialog = new Stage();
         HBox hBox = new HBox();
         JFXButton btnOK = new JFXButton();
-        btnOK.setText("OK");
+        btnOK.setText("Accept");
         JFXButton btnCancel = new JFXButton();
-        btnCancel.setText("Cancel");
+        btnCancel.setText("Decline");
+        btnOK.setPrefSize(60, 30);
+        btnCancel.setPrefSize(60, 30);
+        btnOK.setButtonType(JFXButton.ButtonType.RAISED);
+        btnCancel.setButtonType(JFXButton.ButtonType.RAISED);
+        btnOK.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white");
+        btnCancel.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white");
         Text text = new Text("Do you want to accept file " + fileName + " from " + name + address + " ?");
+        text.setWrappingWidth(250);
+        text.setTextAlignment(TextAlignment.CENTER);
+        text.prefHeight(63);
         hBox.getChildren().add(btnOK);
         hBox.getChildren().add(btnCancel);
         VBox vbox = new VBox();
+        vbox.setLayoutX(48);
+        vbox.setLayoutY(-44);
+        vbox.setSpacing(10);
+        vbox.setAlignment(Pos.CENTER);
         AnchorPane anchorPane = new AnchorPane();
+        anchorPane.setPrefSize(377, 110);
         vbox.getChildren().addAll(text, hBox);
         text.setTextAlignment(TextAlignment.CENTER);
         hBox.setAlignment(Pos.CENTER);
+        hBox.setSpacing(20);
         anchorPane.getChildren().addAll(vbox);
         boolean[] result = {false};
         btnOK.setOnAction(event -> {
@@ -196,6 +222,7 @@ public class ChatWindowController implements Initializable {
         btnCancel.setOnAction(event -> dialog.close());
         dialog.setScene(new Scene(anchorPane));
         dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setResizable(false);
         dialog.showAndWait();
         return result[0];
     }
@@ -212,4 +239,8 @@ public class ChatWindowController implements Initializable {
         Platform.runLater(() -> chatScreen.getItems().add(new ChatMessage(message)));
     }
 
+    public void setLblNameAndAddress(String name, String address) {
+        this.lblName.setText(name);
+        this.lblAddress.setText(address.substring(1));
+    }
 }

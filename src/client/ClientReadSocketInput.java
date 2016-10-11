@@ -89,11 +89,11 @@ public class ClientReadSocketInput extends Thread {
                                     Platform.runLater(() -> {
                                         ChatWindowController controller = null;
                                         try {
-                                            controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + address, address);
+                                            controller = ChatWindowController.ChatWindowsCreate(name, address);
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-                                        controller.showMessage(name + address + ": " + message);
+                                        controller.showMessage(name +": " + message);
                                     });
                                     return null;
                                 }
@@ -103,7 +103,7 @@ public class ClientReadSocketInput extends Thread {
                             new Thread(new Task<Void>() {
                                 @Override
                                 protected Void call() throws Exception {
-                                    chat.showMessage(name + address + ": " + message);
+                                    chat.showMessage(name + ": " + message);
                                     return null;
                                 }
                             }).start();
@@ -122,7 +122,7 @@ public class ClientReadSocketInput extends Thread {
                                     Platform.runLater(() -> {
                                         ChatWindowController controller = null;
                                         try {
-                                            controller = ChatWindowController.ChatWindowsCreate("Chat with " + name + address, address);
+                                            controller = ChatWindowController.ChatWindowsCreate(name, address);
                                             responseFileRequest(controller, filename, name, address);
                                         } catch (IOException e) {
                                             e.printStackTrace();
@@ -152,14 +152,14 @@ public class ClientReadSocketInput extends Thread {
                         address = Protocol.readInetAddress(in);
                         InetSocketAddress receiveAddress = Protocol.readInetAddress(in);
                         System.out.println("From readsocket: " + client.getReceiverFileMap().get(address) + " " + address);
-                        chatWindows.get(address).showMessage(name + address + " has accepted your request. Sending file...");
+                        chatWindows.get(address).showMessage(name + " has accepted your request. Sending file...");
                         new ClientSendFile(client.getHost(), client.getPort(), client.getReceiverFileMap().get(address), receiveAddress).start();
                         client.getReceiverFileMap().remove(address);
                         break;
                     case Protocol.DENY_FILE:
                         name = Protocol.readString(in);
                         address = Protocol.readInetAddress(in);
-                        chatWindows.get(address).showMessage(name + address + " has denied your request.");
+                        chatWindows.get(address).showMessage(name + " has denied your request.");
                         client.getReceiverFileMap().remove(address);
                         break;
                     case Protocol.NOT_AVAIL:

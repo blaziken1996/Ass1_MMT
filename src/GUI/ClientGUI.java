@@ -112,7 +112,7 @@ public class ClientGUI implements Initializable {
                     if (s == null) return;
                     String[] ss = s.split("[:\\s]+");
                     try {
-                        ChatWindowController.ChatWindowsCreate("Chat with " + ss[2] + "/" + ss[0] + ":" + ss[1], new InetSocketAddress(ss[0], Integer.parseInt(ss[1])));
+                        ChatWindowController.ChatWindowsCreate(ss[2], new InetSocketAddress(ss[0], Integer.parseInt(ss[1])));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -5,42 +5,61 @@
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="pane" maxHeight="Infinity" maxWidth="Infinity" minHeight="300" minWidth="500" prefHeight="300" prefWidth="500" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.ChatWindowController">
+<AnchorPane fx:id="pane" maxHeight="Infinity" maxWidth="Infinity" minHeight="300" minWidth="500.0" prefHeight="300" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.ChatWindowController">
     <children>
-      <GridPane fx:id="grid" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane fx:id="grid" hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="400.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="120.0" minWidth="75.0" prefWidth="120.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="NEVER" prefWidth="120.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="265.0" minHeight="10.0" prefHeight="140.0" vgrow="ALWAYS" />
         </rowConstraints>
          <children>
-            <Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="158.0" prefWidth="80.0" text="Label" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
-                <JFXListView fx:id="chatScreen" cellVerticalMargin="0.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="170.0" prefWidth="384.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                <JFXListView fx:id="chatScreen" cellVerticalMargin="0.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="170.0" prefWidth="349.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                <GridPane.margin>
                   <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                </GridPane.margin>
             </JFXListView>
-                <JFXTextArea fx:id="txtEnter" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="384.0" wrapText="true" GridPane.rowIndex="1">
+                <JFXTextArea fx:id="txtEnter" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="339.0" prefHeight="107.0" prefWidth="339.0" wrapText="true" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets bottom="5.0" left="3.0" right="3.0" top="3.0" />
                </GridPane.margin>
             </JFXTextArea>
-            <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <HBox alignment="CENTER" minWidth="100.0" prefHeight="118.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <children>
                       <JFXButton id="sendBtn" fx:id="btnSend" buttonType="RAISED" contentDisplay="CENTER" ellipsisString="" prefHeight="60.0" prefWidth="55.0" ripplerFill="#bbdefb" />
                       <JFXButton fx:id="btnSendFile" buttonType="RAISED" contentDisplay="CENTER" ellipsisString="" onAction="#chooseFile" prefHeight="60.0" prefWidth="60.0" />
                </children>
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
             </HBox>
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+               <children>
+                  <ImageView fitHeight="109.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="NEVER">
+                     <image>
+                        <Image url="@../img/default_profile.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="lblName" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="110.0" text="Label" textAlignment="CENTER" />
+                  <Label fx:id="lblAddress" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="110.0" text="Label" textAlignment="CENTER" />
+               </children>
+            </VBox>
          </children>
+         <padding>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </padding>
       </GridPane>
     </children>
 </AnchorPane>
