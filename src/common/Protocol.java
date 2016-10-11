@@ -21,7 +21,6 @@ public class Protocol {
     public final static int CHAT_SOCKET = 8;
     public final static int RECEIVE_FILE_SOCKET = 9;
     public final static int SEND_FILE_SOCKET = 10;
-    public final static int RECEIVE_FILE_FINISH = 11;
     public final static String ENCODE = "UTF-8";
 
     public static byte[] intToBytes(int x) {

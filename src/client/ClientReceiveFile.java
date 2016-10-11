@@ -35,7 +35,6 @@ public class ClientReceiveFile extends Thread {
     public void run() {
         try {
             ReceiveFile.receive(saveFile, socketReceive);
-            socketReceive.getOutputStream().write(Protocol.intToBytes(Protocol.RECEIVE_FILE_FINISH), 0, 4);
             socketReceive.close();
         } catch (IOException e) {
             e.printStackTrace();

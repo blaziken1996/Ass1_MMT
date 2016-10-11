@@ -81,24 +81,18 @@ public class ServerListener extends Thread {
                 case Protocol.RECEIVE_FILE_SOCKET:
                     System.out.println("Receiver: " + client.getAddress());
                     sendFileMap.put(client.getAddress(), client);
-                    while (Protocol.readInt(input) != Protocol.RECEIVE_FILE_FINISH) ;
-                    client.close();
                     break;
                 case Protocol.SEND_FILE_SOCKET:
                     InetSocketAddress address = Protocol.readInetAddress(input);
-                    int fileSize = Protocol.readInt(input);
                     ServerClient receiver = sendFileMap.get(address);
                     System.out.println("Send to" + address);
                     if (receiver != null) {
                         OutputStream output = receiver.getOutputStream();
                         byte[] buffer = new byte[Protocol.BUFFER_SIZE];
                         int count;
-                        output.write(Protocol.intToBytes(fileSize));
-                        while (fileSize > 0 && (count = input.read(buffer)) > 0) {
+                        while ((count = input.read(buffer)) > 0)
                             output.write(buffer, 0, count);
-                            fileSize -= count;
-                        }
-                        output.flush();
+                        receiver.close();
                         sendFileMap.remove(address);
                     }
                     client.close();
