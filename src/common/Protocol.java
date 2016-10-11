@@ -3,8 +3,8 @@ package common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
-import java.util.Enumeration;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 /**
  * Created by trung on 16/09/2016.
@@ -21,7 +21,6 @@ public class Protocol {
     public final static int CHAT_SOCKET = 8;
     public final static int RECEIVE_FILE_SOCKET = 9;
     public final static int SEND_FILE_SOCKET = 10;
-    public final static int RECEIVE_FILE_FINISH = 11;
     public final static String ENCODE = "UTF-8";
 
     public static byte[] intToBytes(int x) {
@@ -53,24 +52,7 @@ public class Protocol {
         return result;
     }
 
-    public static InetAddress readHostInetAddress() {
-        try {
-            Enumeration<NetworkInterface> interfaceEnumeration = NetworkInterface.getNetworkInterfaces();
-            while (interfaceEnumeration.hasMoreElements()) {
-                NetworkInterface networkInterface = interfaceEnumeration.nextElement();
-                Enumeration<InetAddress> addressEnumeration = networkInterface.getInetAddresses();
-                while (addressEnumeration.hasMoreElements()) {
-                    InetAddress address = addressEnumeration.nextElement();
-                    if (!address.isLinkLocalAddress() && !address.isLoopbackAddress()
-                            && address instanceof Inet4Address)
-                        return address;
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
     public static int readInt(InputStream in) throws IOException {
         byte[] bytes = new byte[Integer.BYTES];
         if (in.read(bytes, 0, bytes.length) == -1) throw new IOException();

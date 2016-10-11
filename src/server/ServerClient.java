@@ -14,7 +14,6 @@ public class ServerClient extends ClientSocket {
         super(socket, name);
         address = (InetSocketAddress) socket.getRemoteSocketAddress();
     }
-
     ServerClient(Socket socket) throws IOException {
         super(socket, null);
         address = (InetSocketAddress) socket.getRemoteSocketAddress();

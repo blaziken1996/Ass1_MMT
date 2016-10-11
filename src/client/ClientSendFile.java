@@ -20,7 +20,6 @@ public class ClientSendFile extends Thread {
             client = new Socket(host, port);
             client.getOutputStream().write(Protocol.intToBytes(Protocol.SEND_FILE_SOCKET));
             client.getOutputStream().write(Protocol.inetAddressToBytes(address));
-            client.getOutputStream().write(Protocol.intToBytes((int) file.length()));
             this.file = file;
         } catch (IOException e) {
             e.printStackTrace();
