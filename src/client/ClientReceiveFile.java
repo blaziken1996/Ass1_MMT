@@ -41,7 +41,7 @@ public class ClientReceiveFile extends Thread {
         try {
             ReceiveFile.receive(saveFile, socketReceive);
             socketReceive.close();
-            Platform.runLater(() -> controller.showMessage("Finished sending file !") );
+            Platform.runLater(() -> controller.showMessage("Finished receiving file !") );
         } catch (IOException e) {
             e.printStackTrace();
         }

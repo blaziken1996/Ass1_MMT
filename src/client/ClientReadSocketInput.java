@@ -111,7 +111,6 @@ public class ClientReadSocketInput extends Thread {
                                 }
                             }).start();
                         }
-                        //clientGUI.show(Protocol.readString(in) + "(" + Protocol.readString(in) + "): " + Protocol.readString(in));
                         break;
                     case Protocol.FILE_REQ_CODE:
                         name = Protocol.readString(in);
@@ -156,7 +155,7 @@ public class ClientReadSocketInput extends Thread {
                         InetSocketAddress receiveAddress = Protocol.readInetAddress(in);
                         System.out.println("From readsocket: " + client.getReceiverFileMap().get(address) + " " + address);
                         chatWindows.get(address).showMessage(name + " has accepted your request. Sending file...");
-                        new ClientSendFile(client.getHost(), client.getPort(), client.getReceiverFileMap().get(address), receiveAddress).start();
+                        new ClientSendFile(client.getHost(), client.getPort(), client.getReceiverFileMap().get(address), receiveAddress, chatWindows.get(address)).start();
                         client.getReceiverFileMap().remove(address);
                         break;
                     case Protocol.DENY_FILE:

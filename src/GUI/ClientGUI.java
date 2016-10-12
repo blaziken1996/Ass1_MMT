@@ -56,8 +56,8 @@ public class ClientGUI implements Initializable {
         ChatWindowController.client = this.client = client;
         ChatWindowController.fileReceiver = fileReceiver = client.getReceiverFileMap();
         lblName.setText(client.getName());
-        lblAddress.setText("IP: " + client.getAddress().toString().substring(1, client.getAddress().toString().indexOf(":") ));
-        lblPort.setText("Port: " + String.valueOf(client.getPort()));
+        lblAddress.setText("IP: " + client.getAddress().toString().substring(1, client.getAddress().toString().indexOf(":")));
+        lblPort.setText("Port: " + client.getAddress().toString().substring(client.getAddress().toString().indexOf(":") + 1));
     }
 
     public ConcurrentHashMap<InetSocketAddress, ChatWindowController> getChatWindows() {

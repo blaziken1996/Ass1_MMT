@@ -10,17 +10,17 @@
 
 <AnchorPane fx:id="pane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="350.0" prefHeight="523.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.LoginController">
     <children>
-          <JFXTextField fx:id="txtServerIP" focusColor="#1976d2" focusTraversable="false" layoutX="40.0" layoutY="306.0" maxWidth="201.0" minWidth="183.0" prefHeight="37.0" prefWidth="201.0" promptText="Server IP">
+          <JFXTextField fx:id="txtServerIP" focusColor="#1976d2" focusTraversable="false" labelFloat="true" layoutX="40.0" layoutY="306.0" maxWidth="201.0" minWidth="183.0" prefHeight="37.0" prefWidth="201.0" promptText="Server IP">
               <font>
                   <Font size="15.0" />
               </font>
           </JFXTextField>
-          <JFXTextField fx:id="txtPort" focusColor="#1976d2" layoutX="241.0" layoutY="306.0" maxWidth="81.0" minWidth="58.0" prefHeight="37.0" prefWidth="81.0" promptText="Port">
+          <JFXTextField fx:id="txtPort" focusColor="#1976d2" labelFloat="true" layoutX="241.0" layoutY="306.0" maxWidth="81.0" minWidth="58.0" prefHeight="37.0" prefWidth="81.0" promptText="Port">
               <font>
                   <Font size="15.0" />
               </font>
           </JFXTextField>
-          <JFXTextField fx:id="txtChatID" focusColor="#1976d2" layoutX="40.0" layoutY="371.0" maxWidth="282.0" minWidth="162.0" prefHeight="37.0" prefWidth="282.0" promptText="Chat ID">
+          <JFXTextField fx:id="txtChatID" focusColor="#1976d2" labelFloat="true" layoutX="40.0" layoutY="371.0" maxWidth="282.0" minWidth="162.0" prefHeight="37.0" prefWidth="282.0" promptText="Chat ID">
               <font>
                   <Font size="15.0" />
               </font>

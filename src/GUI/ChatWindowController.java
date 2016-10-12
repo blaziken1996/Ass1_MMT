@@ -85,6 +85,7 @@ public class ChatWindowController implements Initializable {
 
         stage.setOnCloseRequest(event -> chatWindows.remove(address));
         stage.show();
+        stage.toFront();
         return chatWindowController;
     }
 
@@ -124,7 +125,7 @@ public class ChatWindowController implements Initializable {
         });
         btnSend.setOnAction(event -> {
             try {
-                chatScreen.getItems().add(new ChatMessage("Me: " + txtEnter.getText(), true));
+                chatScreen.getItems().add(new ChatMessage(txtEnter.getText(), true));
                 client.write(asList(Protocol.intToBytes(Protocol.SEND_MSG_CODE),
                         Protocol.inetAddressToBytes(receiverAddress), Protocol.stringToBytes(txtEnter.getText())));
             } catch (IOException e) {
@@ -167,12 +168,6 @@ public class ChatWindowController implements Initializable {
                 return cell;
             }
         });
-//                Text text = new Text();
-//                text.wrappingWidthProperty().bind(param.widthProperty().subtract(30));
-//                text.textProperty().bind( itemProperty());
-//                setPrefWidth(0);
-//                setGraphic(text);
-//                setAlignment(Pos.CENTER_LEFT);
 
         chatScreen.getItems().addListener(new ListChangeListener<ChatMessage>() {
             @Override

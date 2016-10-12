@@ -66,7 +66,7 @@ public class LoginController implements Initializable {
                 ClientGUI clientGUIController = fxmlLoader.getController();
                 Scene Client = new Scene(par);
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setTitle("Client");
+                stage.setTitle("What's up ?");
                 Client.getStylesheets().add(getClass().getResource("css/listview.css").toExternalForm());
                 stage.setScene(Client);
                 clientGUIController.setClient(client);
@@ -89,15 +89,15 @@ public class LoginController implements Initializable {
                 alert.showAndWait();
             } catch (UnknownHostException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Unknown host address");
+                alert.setTitle("Unknown Server Address");
                 alert.setHeaderText(null);
-                alert.setContentText("Please specify a correct host address");
+                alert.setContentText("Please enter a valid server IP address.");
                 alert.showAndWait();
             } catch (ConnectException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Connection Problem");
                 alert.setHeaderText(null);
-                alert.setContentText("Cannot establish connection to the given address and port.");
+                alert.setContentText("Cannot establish connection to the given IP address and port. Please make sure the IP address and port number is of a running server.");
                 alert.showAndWait();
             }
         }
