@@ -110,9 +110,9 @@ public class ClientGUI implements Initializable {
                 listCell.setOnMouseClicked(event -> {
                     String s = listCell.getText();
                     if (s == null) return;
-                    String[] ss = s.split("[:\\s]+");
+                    String[] ss = s.split("[(:)]+");
                     try {
-                        ChatWindowController.ChatWindowsCreate(ss[2], new InetSocketAddress(ss[0], Integer.parseInt(ss[1])));
+                        ChatWindowController.ChatWindowsCreate(ss[0], new InetSocketAddress(ss[1], Integer.parseInt(ss[2])));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

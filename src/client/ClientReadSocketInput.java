@@ -37,7 +37,7 @@ public class ClientReadSocketInput extends Thread {
         if (confirm) {
             File saveFile = controller.saveFileLocation(filename);
             if (saveFile != null) {
-                ClientReceiveFile receiveFile = new ClientReceiveFile(saveFile, client.getHost(), client.getPort());
+                ClientReceiveFile receiveFile = new ClientReceiveFile(saveFile, client.getHost(), client.getPort(), controller);
                 receiveFile.start();
 
                 client.write(asList(Protocol.intToBytes(Protocol.ACCEPT_FILE),
@@ -63,8 +63,11 @@ public class ClientReadSocketInput extends Thread {
                     case Protocol.ONLINE_LIST_CODE:
                         ObservableList<String> list = FXCollections.observableArrayList();
                         int num = Protocol.readInt(in);
+                        String tempName, tempAddress;
                         for (int i = 0; i < num; i++) {
-                            list.add(Protocol.readInetAddress(in).toString().substring(1) + " " + Protocol.readString(in));
+                            tempAddress = Protocol.readInetAddress(in).toString().substring(1);
+                            tempName = Protocol.readString(in);
+                            list.add(tempName + " (" + tempAddress + ")");
                         }
                         Task<Void> task = new Task<Void>() {
                             @Override

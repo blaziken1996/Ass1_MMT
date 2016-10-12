@@ -1,7 +1,10 @@
 package client;
 
+import GUI.ChatWindowController;
+import GUI.ChatMessage;
 import common.Protocol;
 import common.ReceiveFile;
+import javafx.application.Platform;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,10 +18,12 @@ public class ClientReceiveFile extends Thread {
     private InetSocketAddress socketAddress;
     private File saveFile;
     private Socket socketReceive;
+    private ChatWindowController controller;
 
-    public ClientReceiveFile(File filePath, String host, int port) {
+    public ClientReceiveFile(File filePath, String host, int port, ChatWindowController controller) {
         try {
             this.saveFile = filePath;
+            this.controller = controller;
             socketReceive = new Socket(host, port);
             socketAddress = (InetSocketAddress) socketReceive.getLocalSocketAddress();
             socketReceive.getOutputStream().write(Protocol.intToBytes(Protocol.RECEIVE_FILE_SOCKET));
@@ -36,6 +41,7 @@ public class ClientReceiveFile extends Thread {
         try {
             ReceiveFile.receive(saveFile, socketReceive);
             socketReceive.close();
+            Platform.runLater(() -> controller.showMessage("Finished sending file !") );
         } catch (IOException e) {
             e.printStackTrace();
         }

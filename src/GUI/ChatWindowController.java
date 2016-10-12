@@ -37,6 +37,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
+import static javafx.scene.layout.AnchorPane.*;
 
 /**
  * Created by Dark Light on 26/09/2016.
@@ -62,6 +63,7 @@ public class ChatWindowController implements Initializable {
     private Label lblAddress;
 
     private InetSocketAddress receiverAddress;
+    private String receiverName;
 
 
     public static ChatWindowController ChatWindowsCreate(String name, InetSocketAddress address) throws IOException {
@@ -208,6 +210,10 @@ public class ChatWindowController implements Initializable {
         vbox.setAlignment(Pos.CENTER);
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.setPrefSize(377, 110);
+        setBottomAnchor(vbox, 0.0);
+        setTopAnchor(vbox, 0.0);
+        setLeftAnchor(vbox, 0.0);
+        setRightAnchor(vbox, 0.0);
         vbox.getChildren().addAll(text, hBox);
         text.setTextAlignment(TextAlignment.CENTER);
         hBox.setAlignment(Pos.CENTER);
@@ -222,7 +228,7 @@ public class ChatWindowController implements Initializable {
         btnCancel.setOnAction(event -> dialog.close());
         dialog.setScene(new Scene(anchorPane));
         dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.setResizable(false);
+        //dialog.setResizable(false);
         dialog.showAndWait();
         return result[0];
     }
@@ -242,5 +248,10 @@ public class ChatWindowController implements Initializable {
     public void setLblNameAndAddress(String name, String address) {
         this.lblName.setText(name);
         this.lblAddress.setText(address.substring(1));
+        receiverName = name;
+    }
+
+    public String getReceiverName() {
+        return receiverName;
     }
 }
