@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -79,6 +80,7 @@ public class ChatWindowController implements Initializable {
         stage.setMinWidth(500);
         stage.setMinHeight(330);
         stage.setTitle("Chat with " + name + " (" + address.toString().substring(1) +")");
+        stage.getIcons().add(new Image("GUI/img/chat-2-icon.png"));
         stage.setScene(scene);
 
         stage.setOnCloseRequest(event -> chatWindows.remove(address));

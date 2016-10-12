@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -14,8 +15,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("../GUI/fxml/Login.fxml"));
-        primaryStage.setTitle("Log In");
+        Parent root = FXMLLoader.load(getClass().getResource("/GUI/fxml/Login.fxml"));
+        primaryStage.setTitle("What's up ?");
+        primaryStage.getIcons().add(new Image("/GUI/img/chat-2-icon.png"));
         Scene loginScene = new Scene(root);
         primaryStage.setScene(loginScene);
         primaryStage.setResizable(false);

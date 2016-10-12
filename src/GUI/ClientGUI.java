@@ -81,7 +81,6 @@ public class ClientGUI implements Initializable {
     private void getOnlineListAutomatic() {
         Timeline timer = new Timeline(new KeyFrame(Duration.seconds(10), event -> {
             getOnlineList(event);
-            System.out.println("updated");
         }));
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();

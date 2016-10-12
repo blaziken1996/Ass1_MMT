@@ -18,12 +18,16 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 import static java.util.Arrays.asList;
@@ -41,6 +45,8 @@ public class LoginController implements Initializable {
     private JFXButton btnGo;
     @FXML
     private AnchorPane pane;
+    @FXML
+    private Label lblProgram;
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
@@ -55,39 +61,51 @@ public class LoginController implements Initializable {
                 port = Integer.parseInt(portNumber);
                 client = new Client(serverIP, port, txtChatID.getText());
                 client.write(asList(Protocol.intToBytes(Protocol.CHAT_SOCKET), Protocol.stringToBytes(client.getName())));
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/ClientGUI.fxml"));
+                Parent par = fxmlLoader.load();
+                ClientGUI clientGUIController = fxmlLoader.getController();
+                Scene Client = new Scene(par);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setTitle("Client");
+                Client.getStylesheets().add(getClass().getResource("css/listview.css").toExternalForm());
+                stage.setScene(Client);
+                clientGUIController.setClient(client);
+                client.setClientGUI(clientGUIController);
+                clientGUIController.getOnlineListFirstTime();
+                new ClientReadSocketInput(client, clientGUIController).start();
+                stage.setOnCloseRequest(e -> {
+                    try {
+                        client.write(asList(Protocol.intToBytes(Protocol.END_CONNECT_CODE)));
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                });
+                stage.show();
             } catch (NumberFormatException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Invalid Port Number");
                 alert.setHeaderText(null);
                 alert.setContentText("Port number must be an integer");
                 alert.showAndWait();
+            } catch (UnknownHostException e) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Unknown host address");
+                alert.setHeaderText(null);
+                alert.setContentText("Please specify a correct host address");
+                alert.showAndWait();
+            } catch (ConnectException e) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Connection Problem");
+                alert.setHeaderText(null);
+                alert.setContentText("Cannot establish connection to the given address and port.");
+                alert.showAndWait();
             }
         }
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/ClientGUI.fxml"));
-        Parent par = fxmlLoader.load();
-        ClientGUI clientGUIController = fxmlLoader.getController();
-        Scene Client = new Scene(par);
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setTitle("Client");
-        Client.getStylesheets().add(getClass().getResource("css/listview.css").toExternalForm());
-        stage.setScene(Client);
-        clientGUIController.setClient(client);
-        client.setClientGUI(clientGUIController);
-        clientGUIController.getOnlineListFirstTime();
-        new ClientReadSocketInput(client, clientGUIController).start();
-        stage.setOnCloseRequest(e -> {
-            try {
-                client.write(asList(Protocol.intToBytes(Protocol.END_CONNECT_CODE)));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        });
-        stage.show();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        lblProgram.setStyle("-fx-font: bold 20pt Arial; -fx-text-fill: #757575");
         Platform.runLater(() -> pane.requestFocus());
     }
 }
