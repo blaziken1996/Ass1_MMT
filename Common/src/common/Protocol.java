@@ -16,7 +16,7 @@ public class Protocol {
     public final static int FILE_REQ_CODE = 2;
     public final static int END_CONNECT_CODE = 7;
     public final static int ONLINE_LIST_CODE = 5;
-    public final static int BUFFER_SIZE = 8 * 64 * 1024;
+    public final static int BUFFER_SIZE = 8 * 1024;
     public final static int NOT_AVAIL = 6;
     public final static int CHAT_SOCKET = 8;
     public final static int RECEIVE_FILE_SOCKET = 9;

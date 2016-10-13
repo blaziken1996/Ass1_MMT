@@ -25,22 +25,6 @@ public class Server extends Thread {
         inetAddress = readHostInetAddress();
     }
 
-    @Override
-    public void run() {
-        while (!Thread.interrupted()) {
-            try {
-                serverSocket = new ServerSocket(port);
-                Platform.runLater(() -> controller.consoleLog("Server socket opens at " + getInetAddress() + " port " + serverSocket.getLocalPort()));
-//                System.out.println("Server socket opens at " + getInetAddress() + " port " + serverSocket.getLocalPort());
-                while (true)
-                    new ServerListener(new ServerClient(serverSocket.accept()), clientMap, sendFileMap, controller).start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
     public static InetAddress readHostInetAddress() {
         try {
             Enumeration<NetworkInterface> interfaceEnumeration = NetworkInterface.getNetworkInterfaces();
@@ -58,6 +42,22 @@ public class Server extends Thread {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void run() {
+        while (!Thread.interrupted()) {
+            try {
+                serverSocket = new ServerSocket(port);
+                Platform.runLater(() -> controller.consoleLog("Server socket opens at " + getInetAddress() + " port " + serverSocket.getLocalPort()));
+//                System.out.println("Server socket opens at " + getInetAddress() + " port " + serverSocket.getLocalPort());
+                while (true)
+                    new ServerListener(new ServerClient(serverSocket.accept()), clientMap, sendFileMap, controller).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public InetAddress getInetAddress() {

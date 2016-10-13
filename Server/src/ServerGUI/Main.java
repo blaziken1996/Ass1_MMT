@@ -1,24 +1,20 @@
 package ServerGUI;
 
-import ClientGUI.ClientGUI;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.fxml.FXML;
-import com.jfoenix.controls.JFXButton;
 import server.Server;
 
 import java.io.IOException;
@@ -43,6 +39,10 @@ public class Main extends Application {
     private AnchorPane anchorPane;
 
     private Server server;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @FXML
     void serverSetup(ActionEvent event) {
@@ -89,9 +89,5 @@ public class Main extends Application {
             Platform.exit();
             System.exit(0);
         } );
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
