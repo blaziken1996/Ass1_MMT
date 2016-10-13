@@ -1,4 +1,4 @@
-package GUI;
+package ClientGUI;
 
 import client.Client;
 import com.jfoenix.controls.JFXButton;
@@ -80,7 +80,7 @@ public class ChatWindowController implements Initializable {
         stage.setMinWidth(500);
         stage.setMinHeight(330);
         stage.setTitle("Chat with " + name + " (" + address.toString().substring(1) +")");
-        stage.getIcons().add(new Image("GUI/img/chat-2-icon.png"));
+        stage.getIcons().add(new Image("ClientGUI/img/chat-2-icon.png"));
         stage.setScene(scene);
 
         stage.setOnCloseRequest(event -> chatWindows.remove(address));

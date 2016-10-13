@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="456.0" prefWidth="419.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServerGUI.TerminalController">
+   <children>
+      <ImageView fitHeight="172.0" fitWidth="164.0" layoutX="22.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="24.0">
+         <image>
+            <Image url="@icon.png" />
+         </image>
+      </ImageView>
+      <Pane fx:id="resultPane" layoutX="212.0" layoutY="23.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="164.0" prefWidth="189.0" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="23.0">
+         <children>
+            <Label alignment="CENTER" layoutX="16.0" layoutY="14.0" prefHeight="61.0" prefWidth="157.0" text="Your server is now up and running" textAlignment="CENTER" textFill="#2196f3" wrapText="true">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblIP" layoutX="16.0" layoutY="82.0" prefHeight="30.0" prefWidth="157.0" text="Label">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+            <Label fx:id="lblPort" layoutX="16.0" layoutY="120.0" prefHeight="30.0" prefWidth="157.0" text="Label">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+         </children>
+      </Pane>
+      <TextArea fx:id="txtArea" editable="false" focusTraversable="false" layoutX="12.0" layoutY="233.0" prefHeight="209.0" prefWidth="396.0" wrapText="true" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="11.0" />
+   </children>
+</AnchorPane>

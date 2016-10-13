@@ -1,6 +1,6 @@
 package client;
 
-import GUI.ClientGUI;
+import ClientGUI.ClientGUI;
 import common.ClientSocket;
 
 import java.io.File;

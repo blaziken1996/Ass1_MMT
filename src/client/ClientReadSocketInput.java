@@ -1,7 +1,7 @@
 package client;
 
-import GUI.ChatWindowController;
-import GUI.ClientGUI;
+import ClientGUI.ChatWindowController;
+import ClientGUI.ClientGUI;
 import common.Protocol;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

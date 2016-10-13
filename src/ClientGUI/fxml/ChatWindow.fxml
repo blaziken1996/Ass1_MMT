@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="pane" maxHeight="Infinity" maxWidth="Infinity" minHeight="300" minWidth="500.0" prefHeight="300" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.ChatWindowController">
+<AnchorPane fx:id="pane" maxHeight="Infinity" maxWidth="Infinity" minHeight="300" minWidth="500.0" prefHeight="300" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientGUI.ChatWindowController">
     <children>
       <GridPane fx:id="grid" hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>

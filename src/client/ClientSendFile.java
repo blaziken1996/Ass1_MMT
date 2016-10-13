@@ -1,6 +1,6 @@
 package client;
 
-import GUI.ChatWindowController;
+import ClientGUI.ChatWindowController;
 import common.Protocol;
 import common.SendFile;
 import javafx.application.Platform;

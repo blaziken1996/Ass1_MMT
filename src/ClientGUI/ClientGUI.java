@@ -1,4 +1,4 @@
-package GUI;
+package ClientGUI;
 /**
  * Created by Dark Light on 22/09/2016.
  */

@@ -1,7 +1,9 @@
 package server;
 
+import ServerGUI.TerminalController;
 import common.ClientSocket;
 import common.Protocol;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,13 +25,14 @@ public class ServerListener extends Thread {
     private ServerClient client;
     private ConcurrentHashMap<InetSocketAddress, ServerClient> clientAddressMap;
     private ConcurrentHashMap<InetSocketAddress, ServerClient> sendFileMap;
-    //private String clientAddress;
+    private TerminalController controller;
 
     public ServerListener(ServerClient socket, ConcurrentHashMap<InetSocketAddress, ServerClient> addressMap,
-                          ConcurrentHashMap<InetSocketAddress, ServerClient> sendFileMap) {
+                          ConcurrentHashMap<InetSocketAddress, ServerClient> sendFileMap, TerminalController controller) {
         client = socket;
         clientAddressMap = addressMap;
         this.sendFileMap = sendFileMap;
+        this.controller = controller;
     }
 
     @Override
@@ -43,7 +46,8 @@ public class ServerListener extends Thread {
                         //Get client ip address
                         //clientAddress = client.getSocket().getRemoteSocketAddress().toString().substring(1);
                         clientAddressMap.put(client.getAddress(), client);
-                        System.out.println("Connected with client at " + client.getAddress() + " " + client.getName());
+                        Platform.runLater(() -> controller.consoleLog("Connected with client at " + client.getAddress() + " " + client.getName()));
+//                        System.out.println("Connected with client at " + client.getAddress() + " " + client.getName());
                         boolean isConnected = true;
                         while (isConnected) {
                             switch (Protocol.readInt(input)) {
@@ -75,17 +79,17 @@ public class ServerListener extends Thread {
                         e.printStackTrace();
                     } finally {
                         clientAddressMap.remove(client.getAddress());
-                        System.out.println("Client at " + client.getAddress() + " disconnect from server.");
+                        Platform.runLater(() -> controller.consoleLog("Client at " + client.getAddress() + " disconnect from server."));
                     }
                     break;
                 case Protocol.RECEIVE_FILE_SOCKET:
-                    System.out.println("Receiver: " + client.getAddress());
+                    Platform.runLater(() -> controller.consoleLog("Receiver: " + client.getAddress()));
                     sendFileMap.put(client.getAddress(), client);
                     break;
                 case Protocol.SEND_FILE_SOCKET:
                     InetSocketAddress address = Protocol.readInetAddress(input);
                     ServerClient receiver = sendFileMap.get(address);
-                    System.out.println("Send to" + address);
+                    Platform.runLater(() -> controller.consoleLog("Send to" + address));
                     if (receiver != null) {
                         OutputStream output = receiver.getOutputStream();
                         byte[] buffer = new byte[Protocol.BUFFER_SIZE];
@@ -180,5 +184,4 @@ public class ServerListener extends Thread {
             e.printStackTrace();
         }
     }
-
 }

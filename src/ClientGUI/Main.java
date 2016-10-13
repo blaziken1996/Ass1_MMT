@@ -1,4 +1,4 @@
-package sample;
+package ClientGUI;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,9 +15,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/GUI/fxml/Login.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));
         primaryStage.setTitle("What's up ?");
-        primaryStage.getIcons().add(new Image("/GUI/img/chat-2-icon.png"));
+        primaryStage.getIcons().add(new Image("/ClientGUI/img/chat-2-icon.png"));
         Scene loginScene = new Scene(root);
         primaryStage.setScene(loginScene);
         primaryStage.setResizable(false);
