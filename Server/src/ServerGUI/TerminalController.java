@@ -28,6 +28,8 @@ public class TerminalController implements Initializable{
 
     public void setInfo (String address, int port) {
         lblIP.setText("Server IP: " + address.substring(1));
+        lblIP.setPrefHeight(50);
+        lblIP.setWrapText(true);
         lblPort.setText("Port: " + Integer.toString(port));
     }
 

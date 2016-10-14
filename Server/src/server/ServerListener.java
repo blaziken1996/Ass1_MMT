@@ -83,13 +83,12 @@ public class ServerListener extends Thread {
                     }
                     break;
                 case Protocol.RECEIVE_FILE_SOCKET:
-                    Platform.runLater(() -> controller.consoleLog("Receiver: " + client.getAddress()));
                     sendFileMap.put(client.getAddress(), client);
                     break;
                 case Protocol.SEND_FILE_SOCKET:
                     InetSocketAddress address = Protocol.readInetAddress(input);
                     ServerClient receiver = sendFileMap.get(address);
-                    Platform.runLater(() -> controller.consoleLog("Send to" + address));
+                    Platform.runLater(() -> controller.consoleLog(client.getAddress() + " is sending file to " + address));
                     if (receiver != null) {
                         OutputStream output = receiver.getOutputStream();
                         byte[] buffer = new byte[Protocol.BUFFER_SIZE];
