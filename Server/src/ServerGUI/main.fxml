@@ -16,7 +16,7 @@
             <Image url="@icon.png" />
          </image>
       </ImageView>
-      <Pane fx:id="resultPane" layoutX="212.0" layoutY="23.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="164.0" prefWidth="189.0" visible="false" AnchorPane.bottomAnchor="22.0" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="23.0">
+      <!--<Pane fx:id="resultPane" layoutX="212.0" layoutY="23.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="164.0" prefWidth="189.0" visible="false" AnchorPane.bottomAnchor="22.0" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="23.0">
          <children>
             <Label alignment="CENTER" layoutX="16.0" layoutY="14.0" prefHeight="61.0" prefWidth="157.0" text="Your server is now up and running" textAlignment="CENTER" wrapText="true">
                <font>
@@ -26,7 +26,7 @@
             <Label fx:id="lblIP" layoutX="16.0" layoutY="82.0" prefHeight="30.0" prefWidth="157.0" text="Label" />
             <Label fx:id="lblPort" layoutX="16.0" layoutY="120.0" prefHeight="30.0" prefWidth="157.0" text="Label" />
          </children>
-      </Pane>
+      </Pane>-->
       <Pane fx:id="inputPane" layoutX="212.0" layoutY="7.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="197.0" prefWidth="189.0">
          <children>
             <Label alignment="CENTER" layoutX="16.0" layoutY="14.0" prefHeight="36.0" prefWidth="157.0" text="SERVER SETUP" textAlignment="CENTER" textFill="#2196f3">
