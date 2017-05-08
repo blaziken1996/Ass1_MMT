@@ -1,6 +1,3 @@
-# Ass1_MMT
-Các câu lệnh sử dụng trong terminal:
-sendfile#địa chỉ người nhận#đường dẫn file
-sendmsg#địa chỉ người nhận#tin nhắn
-whoisonline    //hiển thị danh sách người đang online
-quit        //thoát
+# Whatsup
+A simple chat application with server. Written in Java.
+User can connect to server to chat and send file with each other.
